@@ -8,13 +8,22 @@ interface SongProps {
 
 const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [metadata, setMetadata] = useState<{ title?: string; artist?: string; genre?: string }>({});
+  const [metadata, setMetadata] = useState<{ title?: string; artist?: string; genre?: string; uploadTime?: string }>(
+    {},
+  );
   const howlerRef = useRef<Howl | null>(null);
+
+  // const testTime = 1726665533;
+  // const testDate = new Date(testTime * 1000);
+  // const formattedDate = testDate.toString();
+  // console.log(formattedDate);
 
   // Using useEffect to initialize the song and Howler.js
   useEffect(() => {
     // Since `metadataCID` is already an object, parse and set metadata directly
     const meta = JSON.parse(metadataCID);
+    const humanReadableTime = new Date(meta.uploadTime * 1000).toString();
+    meta.uploadTime = humanReadableTime;
     setMetadata(meta);
 
     howlerRef.current = new Howl({
@@ -56,6 +65,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
         <p className="text-lg font-semibold">{metadata.title || "Unknown Track"}</p>
         <p className="text-sm">{metadata.artist || "Unknown Artist"}</p>
         <p className="text-sm italic">{metadata.genre || "Unknown Genre"}</p>
+        <p className="text-sm italic">{metadata.uploadTime || "Unknown Date"}</p>
 
         {/* Placeholder for waveform visualization */}
         <div className="relative mt-2 w-full h-2 bg-gray-700 rounded-full overflow-hidden">

@@ -13,11 +13,32 @@ const Listen: NextPage = () => {
   const ifImAbleSong = "http://localhost:8080/ipfs/QmfCBb8Lm9tP2yRAexr1TjQjUq4XMe86UWqUjVo9zvveTc";
   // const ifImAbleMeta = "http://localhost:8080/ipfs/QmNZhYabzjLmYdfB6gdZTQqzWa1KLAP9aEFD5DhJHfi6zK";
 
+  // const now = new Date().toISOString();
+  // console.log(now);
+  // 2024-09-18T13:17:19.170Z
+
+  // const now2 = new Date();
+  // console.log(now2);
+  // Wed Sep 18 2024 09:19:59 GMT-0400 (Eastern Daylight Time)
+
+  // const testTime = 1726665533;
+  // const testDate = new Date(testTime * 1000);
+  // const formattedDate = testDate.toString();
+  // console.log(formattedDate);
+
+  const humanReadableTime = new Date();
+  console.log(humanReadableTime);
+  const currentDate = new Date();
+  // Store unixTimeStamp in metadata
+  const unixTimeStamp = Math.floor(currentDate.getTime() / 1000);
+  console.log(unixTimeStamp);
+
   const ifImAbleMetaData = {
     artist: "Caso Beats",
     title: "If I'm Able",
     genre: "Lofi",
     fileUrl: "http://localhost:8080/ipfs/QmfCBb8Lm9tP2yRAexr1TjQjUq4XMe86UWqUjVo9zvveTc",
+    uploadTime: unixTimeStamp,
   };
 
   const ifImAbleMeta = JSON.stringify(ifImAbleMetaData);
