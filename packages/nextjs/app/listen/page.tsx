@@ -1,9 +1,35 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import SongList from "../mymusic/_components/SongList";
 import Song from "./_components/Song";
 import type { NextPage } from "next";
+import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Listen: NextPage = () => {
+  const [songs, setSongs] = useState<number[]>([]);
+  const { data: uploadedSongEvents, isLoading: uploadedSongsIsLoading } = useScaffoldEventHistory({
+    contractName: "SoundChain",
+    eventName: "SongUploaded",
+    fromBlock: 0n,
+    watch: true,
+  });
+
+  useEffect(() => {
+    if (uploadedSongEvents && !uploadedSongsIsLoading) {
+      const songIdArray: number[] | undefined = [];
+      uploadedSongEvents.forEach(e => {
+        if (e.args.songId) {
+          songIdArray.push(Number(e.args.songId));
+        }
+      });
+
+      setSongs(songIdArray);
+      // console.log(uploadedSongEvents[0].args.songId);
+      // console.log(uploadedSongEvents[1].args.songId);
+    }
+  }, [uploadedSongEvents]);
+
   // const testSong = "http://localhost:8080/ipfs/QmYuPWyw2QAP3orqc8QjCKFtWQKC3CmaJ9zDJHzAgp63aP";
   // const testMeta = "http://localhost:8080/ipfs/QmVrg62tc7EfSctKkoYjPozk4obf7XD3s53HzsaurPeUKQ";
 
@@ -26,12 +52,12 @@ const Listen: NextPage = () => {
   // const formattedDate = testDate.toString();
   // console.log(formattedDate);
 
-  const humanReadableTime = new Date();
-  console.log(humanReadableTime);
-  const currentDate = new Date();
+  // const humanReadableTime = new Date();
+  // console.log(humanReadableTime);
+  const currentDateTime = new Date();
   // Store unixTimeStamp in metadata
-  const unixTimeStamp = Math.floor(currentDate.getTime() / 1000);
-  console.log(unixTimeStamp);
+  const unixTimeStamp = Math.floor(currentDateTime.getTime() / 1000);
+  // console.log(unixTimeStamp);
 
   const ifImAbleMetaData = {
     artist: "Caso Beats",
@@ -45,10 +71,11 @@ const Listen: NextPage = () => {
 
   return (
     <div className="p-4 bg-gray-900 min-h-screen">
-      <h1 className="text-4xl text-white mb-6">This page is broken as shit due to Song.tsx refactoring</h1>
+      <h1 className="text-4xl text-white mb-6">This page is no longer broken as shit (due to Song.tsx refactoring)</h1>
       {/* <Song songCID={testSong} metadataCID={testMeta} />
       <Song songCID={testSong2} metadataCID={testMeta2} />*/}
-      <Song songCID={ifImAbleSong} metadataCID={ifImAbleMeta} />
+      {/* <Song songCID={ifImAbleSong} metadataCID={ifImAbleMeta} /> */}
+      <SongList songs={songs} />
     </div>
   );
 };

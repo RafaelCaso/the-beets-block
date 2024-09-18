@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SoundChain is ERC721, ERC721URIStorage, Ownable {
 
+  event SongUploaded(uint256 indexed songId, string artist);
+
   mapping(address => string) public artistNames;
   mapping(address => uint256[]) public artistSongs;
 
@@ -49,6 +51,7 @@ contract SoundChain is ERC721, ERC721URIStorage, Ownable {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
         artistSongs[to].push(tokenId);
+        emit SongUploaded(tokenId, artistNames[to]);
         return tokenId;
     }
 
