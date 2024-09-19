@@ -54,8 +54,6 @@ const Home: NextPage = () => {
       functionName: "registerAccount",
       args: [artistName],
     });
-
-    console.log(txHash);
   };
 
   if (!isRegisteredError) {
@@ -94,7 +92,6 @@ const Home: NextPage = () => {
                 Register
               </button>
             </div>
-            <Link href="/listen">Listen</Link>
           </div>
         )}
       </>

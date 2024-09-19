@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -29,9 +27,6 @@ const blockieSizeMap = {
   "3xl": 15,
 };
 
-/**
- * Displays an address (or ENS) with a Blockie image and option to copy address.
- */
 export const Address = ({ address, disableAddressLink, format, size = "base" }: AddressProps) => {
   const [ens, setEns] = useState<string | null>();
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
@@ -47,6 +42,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
       enabled: isAddress(checkSumAddress ?? ""),
     },
   });
+
   const { data: fetchedEnsAvatar } = useEnsAvatar({
     name: fetchedEns ? normalize(fetchedEns) : undefined,
     chainId: 1,
@@ -56,7 +52,6 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
     },
   });
 
-  // We need to apply this pattern to avoid Hydration errors.
   useEffect(() => {
     setEns(fetchedEns);
   }, [fetchedEns]);
@@ -65,10 +60,9 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
     setEnsAvatar(fetchedEnsAvatar);
   }, [fetchedEnsAvatar]);
 
-  // Skeleton UI
   if (!checkSumAddress) {
     return (
-      <div className="animate-pulse flex space-x-4">
+      <div className="animate-pulse flex space-x-4 mt-2">
         <div className="rounded-md bg-slate-300 h-6 w-6"></div>
         <div className="flex items-center space-y-6">
           <div className="h-2 w-28 bg-slate-300 rounded"></div>
@@ -89,6 +83,14 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
   } else if (format === "long") {
     displayAddress = checkSumAddress;
   }
+
+  const handleCopyClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation
+    setAddressCopied(true);
+    setTimeout(() => {
+      setAddressCopied(false);
+    }, 800);
+  };
 
   return (
     <div className="flex items-center flex-shrink-0">
@@ -121,20 +123,14 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           aria-hidden="true"
         />
       ) : (
-        <CopyToClipboard
-          text={checkSumAddress}
-          onCopy={() => {
-            setAddressCopied(true);
-            setTimeout(() => {
-              setAddressCopied(false);
-            }, 800);
-          }}
-        >
-          <DocumentDuplicateIcon
-            className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer flex-shrink-0"
-            aria-hidden="true"
-          />
-        </CopyToClipboard>
+        <span onClick={handleCopyClick}>
+          <CopyToClipboard text={checkSumAddress}>
+            <DocumentDuplicateIcon
+              className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer flex-shrink-0"
+              aria-hidden="true"
+            />
+          </CopyToClipboard>
+        </span>
       )}
     </div>
   );

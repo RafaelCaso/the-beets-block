@@ -97,6 +97,7 @@ const UploadMusic: React.FC = () => {
           genre: genre.toLowerCase(),
           fileUrl: fileIpfsUrl,
           uploadTime: unixTimeStamp,
+          artistAddress: connectedAddress,
         };
 
         // Upload metadata to IPFS

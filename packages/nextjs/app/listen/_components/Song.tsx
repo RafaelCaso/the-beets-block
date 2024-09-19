@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Howl } from "howler";
+import { Address } from "~~/components/scaffold-eth";
+import { Avatar } from "~~/components/scaffold-eth/Avatar";
 
 interface SongProps {
   songCID: string;
@@ -8,19 +11,17 @@ interface SongProps {
 
 const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [metadata, setMetadata] = useState<{ title?: string; artist?: string; genre?: string; uploadTime?: string }>(
-    {},
-  );
+  const [metadata, setMetadata] = useState<{
+    title?: string;
+    artist?: string;
+    genre?: string;
+    uploadTime?: string;
+    artistAddress?: string;
+  }>({});
   const howlerRef = useRef<Howl | null>(null);
+  const router = useRouter();
 
-  // const testTime = 1726665533;
-  // const testDate = new Date(testTime * 1000);
-  // const formattedDate = testDate.toString();
-  // console.log(formattedDate);
-
-  // Using useEffect to initialize the song and Howler.js
   useEffect(() => {
-    // Since `metadataCID` is already an object, parse and set metadata directly
     const meta = JSON.parse(metadataCID);
     const humanReadableTime = new Date(meta.uploadTime * 1000).toString();
     meta.uploadTime = humanReadableTime;
@@ -49,23 +50,37 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
     }
   };
 
+  const handleClick = () => {
+    router.push("/");
+  };
+
   return (
-    <div className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto">
+    <div
+      onClick={handleClick}
+      className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto transition-transform duration-300 transform hover:scale-105 hover:bg-gray-700 cursor-pointer"
+    >
       {/* Play/Pause Button */}
       <button
-        onClick={togglePlay}
+        onClick={e => {
+          e.stopPropagation();
+          togglePlay();
+        }}
         className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center focus:outline-none mr-4"
       >
         {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play</span>}
       </button>
 
-      {/* Song Info */}
       <div className="flex-1">
-        {/* Use title, artist, and genre from the metadata */}
-        <p className="text-lg font-semibold">{metadata.title || "Unknown Track"}</p>
-        <p className="text-sm">{metadata.artist || "Unknown Artist"}</p>
-        <p className="text-sm italic">{metadata.genre || "Unknown Genre"}</p>
-        <p className="text-sm italic">{metadata.uploadTime || "Unknown Date"}</p>
+        {/* Title */}
+        <div className="flex items-center">
+          <p className="text-lg font-semibold">{metadata.title || "Unknown Track"}</p>
+        </div>
+
+        {/* Genre and Upload Time */}
+        <div className="flex flex-col mt-2">
+          <p className="text-sm italic">{metadata.genre || "Unknown Genre"}</p>
+          <p className="text-sm italic">{metadata.uploadTime || "Unknown Date"}</p>
+        </div>
 
         {/* Placeholder for waveform visualization */}
         <div className="relative mt-2 w-full h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -73,8 +88,17 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
         </div>
       </div>
 
-      {/* Graphic or album art placeholder */}
-      <div className="w-12 h-12 bg-gray-700 rounded-lg ml-4"></div>
+      <div className="flex flex-col items-center justify-center">
+        {/* Artist Name */}
+        <p className="text-lg font-semibold">{metadata.artist || "Unknown Artist"}</p>
+
+        {/* Avatar */}
+        <Avatar address={metadata.artistAddress} size="10xl" />
+
+        <div className="mt-2">
+          <Address address={metadata.artistAddress} />
+        </div>
+      </div>
     </div>
   );
 };
