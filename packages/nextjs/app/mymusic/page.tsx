@@ -21,8 +21,6 @@ const MyMusic: NextPage = () => {
     }
   }
 
-  console.log("MyMusic songList:", songList);
-
   return (
     <>
       <SongList songs={songList} />

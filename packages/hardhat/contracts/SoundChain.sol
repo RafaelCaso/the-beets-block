@@ -38,26 +38,28 @@ contract SoundChain is ERC721, ERC721URIStorage, Ownable {
     return false;
   }
 
-      function _baseURI() internal pure override returns (string memory) {
-        // @dev delete localhost baseURI and uncomment ipfs uri for production
-      return "http://localhost:8080/ipfs/";
-		  // return "ipfs://";
-	  }
 
-    function mintItem(address to, string memory uri) public payable returns (uint256) {
-        nextTokenId += 1;
-        uint256 tokenId = nextTokenId;
+  function getSongs(address _artist) public view returns(uint256[] memory) {
+    return artistSongs[_artist];
+  }
 
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-        artistSongs[to].push(tokenId);
-        emit SongUploaded(tokenId, artistNames[to]);
-        return tokenId;
-    }
+  function _baseURI() internal pure override returns (string memory) {
+    // @dev delete localhost baseURI and uncomment ipfs uri for production
+    return "http://localhost:8080/ipfs/";
+		// return "ipfs://";
+	}
 
-    function getSongs(address _artist) public view returns(uint256[] memory) {
-      return artistSongs[_artist];
-    }
+  function mintItem(address to, string memory uri) public payable returns (uint256) {
+      nextTokenId += 1;
+      uint256 tokenId = nextTokenId;
+
+      _safeMint(to, tokenId);
+      _setTokenURI(tokenId, uri);
+      artistSongs[to].push(tokenId);
+      emit SongUploaded(tokenId, artistNames[to]);
+      return tokenId;
+  }
+
 
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;

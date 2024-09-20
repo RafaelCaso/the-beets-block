@@ -71,7 +71,6 @@ const Listen: NextPage = () => {
 
   return (
     <div className="p-4 bg-gray-900 min-h-screen">
-      <h1 className="text-4xl text-white mb-6">This page is no longer broken as shit (due to Song.tsx refactoring)</h1>
       {/* <Song songCID={testSong} metadataCID={testMeta} />
       <Song songCID={testSong2} metadataCID={testMeta2} />*/}
       {/* <Song songCID={ifImAbleSong} metadataCID={ifImAbleMeta} /> */}

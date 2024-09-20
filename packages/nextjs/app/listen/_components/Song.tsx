@@ -3,10 +3,11 @@ import { useRouter } from "next/navigation";
 import { Howl } from "howler";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface SongProps {
-  songCID: string;
-  metadataCID: string; // this is already passed as JSON, no need to fetch it again
+  songCID: string; // ipfs url
+  metadataCID: string; // JSON
 }
 
 const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
@@ -50,8 +51,16 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
     }
   };
 
+  // probably don't need this here
+  // rather, have it in ArtistProfile.tsx and pass metadata.artistAddress as prop to component to populate
+  const { data: songsByArtist } = useScaffoldReadContract({
+    contractName: "SoundChain",
+    functionName: "getSongs",
+    args: [metadata.artistAddress],
+  });
+
   const handleClick = () => {
-    router.push("/");
+    router.push("/artist-portfolio?artistAddress=" + metadata.artistAddress);
   };
 
   return (
