@@ -12,6 +12,8 @@ interface SongProps {
 
 const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0); // Track current song time
+  const [duration, setDuration] = useState(0); // Track total song duration
   const [metadata, setMetadata] = useState<{
     title?: string;
     artist?: string;
@@ -20,6 +22,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
     artistAddress?: string;
   }>({});
   const howlerRef = useRef<Howl | null>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,15 +33,33 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
 
     howlerRef.current = new Howl({
       src: [songCID],
-      loop: true,
+      loop: false, // Not looping for the tracker to work well
       volume: 1.0,
       format: ["mp3", "ogg"],
+      onload: () => {
+        setDuration(howlerRef.current?.duration() || 0); // Set total song duration
+      },
+      onend: () => {
+        setIsPlaying(false); // Stop when the song ends
+      },
     });
 
     return () => {
       howlerRef.current?.unload();
     };
   }, [songCID, metadataCID]);
+
+  useEffect(() => {
+    let interval: number | undefined;
+    if (isPlaying) {
+      interval = window.setInterval(() => {
+        setCurrentTime(howlerRef.current?.seek() as number); // Update current song time
+      }, 1000);
+    } else if (!isPlaying && currentTime !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentTime]);
 
   const togglePlay = () => {
     if (howlerRef.current) {
@@ -51,13 +72,16 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
     }
   };
 
-  // probably don't need this here
-  // rather, have it in ArtistProfile.tsx and pass metadata.artistAddress as prop to component to populate
-  const { data: songsByArtist } = useScaffoldReadContract({
-    contractName: "SoundChain",
-    functionName: "getSongs",
-    args: [metadata.artistAddress],
-  });
+  // Function to handle seeking
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (howlerRef.current && progressRef.current) {
+      const rect = progressRef.current.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const seekTime = (clickX / rect.width) * duration; // Calculate seek time
+      howlerRef.current.seek(seekTime); // Set Howler's current time
+      setCurrentTime(seekTime);
+    }
+  };
 
   const handleClick = () => {
     router.push("/artist-portfolio?artistAddress=" + metadata.artistAddress);
@@ -65,8 +89,8 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
 
   return (
     <div
-      onClick={handleClick}
-      className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto transition-transform duration-300 transform hover:scale-105 hover:bg-gray-700 cursor-pointer"
+      // onClick={handleClick}
+      className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto transition-transform duration-300 transform"
     >
       {/* Play/Pause Button */}
       <button
@@ -74,7 +98,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
           e.stopPropagation();
           togglePlay();
         }}
-        className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center focus:outline-none mr-4"
+        className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center focus:outline-none mr-4 hover:scale-125 hover:bg-gray-700"
       >
         {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play</span>}
       </button>
@@ -91,9 +115,22 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
           <p className="text-sm italic">{metadata.uploadTime || "Unknown Date"}</p>
         </div>
 
-        {/* Placeholder for waveform visualization */}
-        <div className="relative mt-2 w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-          <div className="absolute top-0 left-0 h-full bg-orange-500" style={{ width: "50%" }}></div>
+        {/* Progress Bar */}
+        <div
+          className="relative mt-2 w-full h-8 bg-gray-700 rounded-full overflow-hidden cursor-pointer"
+          ref={progressRef}
+          onClick={handleSeek}
+        >
+          <div
+            className="absolute top-0 left-0 h-full bg-orange-500"
+            style={{ width: `${(currentTime / duration) * 100}%` }}
+          ></div>
+        </div>
+
+        {/* Current Time / Total Duration */}
+        <div className="flex justify-between text-xs mt-1">
+          <span>{new Date(currentTime * 1000).toISOString().slice(14, 19)}</span>
+          <span>{new Date(duration * 1000).toISOString().slice(14, 19)}</span>
         </div>
       </div>
 

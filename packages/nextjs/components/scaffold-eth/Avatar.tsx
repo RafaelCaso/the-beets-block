@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getAddress } from "viem";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
@@ -28,6 +29,7 @@ export const Avatar = ({ address, size = "base" }: AvatarProps) => {
   if (!address) {
     return <div className="w-12 h-12 bg-gray-700 rounded-lg" />;
   }
+  const router = useRouter();
 
   const [ensName, setEnsName] = useState<string | null>(null);
   const [ensAvatar, setEnsAvatar] = useState<string | null>(null);
@@ -54,8 +56,12 @@ export const Avatar = ({ address, size = "base" }: AvatarProps) => {
     setEnsAvatar(fetchedEnsAvatar ?? null);
   }, [fetchedEnsAvatar]);
 
+  const handleClick = () => {
+    router.push("/artist-portfolio?artistAddress=" + address);
+  };
+
   return (
-    <div className="flex items-center">
+    <div onClick={handleClick} className="flex rounded-full items-center hover:scale-105 cursor-pointer">
       {/* Display ENS avatar if available, otherwise fallback to blockie */}
       {ensAvatar ? (
         <img

@@ -71,16 +71,16 @@ const UploadMusic: React.FC = () => {
         // ****     VERY IMPORTANT!!!!!!!                 ***
         // ****     Uncomment below for copyright check   ***
         // **************************************************
-        // const checkResult = await checkCopyright(buffer);
+        const checkResult = await checkCopyright(buffer);
 
-        // if (checkResult.metadata && checkResult.metadata.music) {
-        //   const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
+        if (checkResult.metadata && checkResult.metadata.music) {
+          const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
 
-        //   if (highScore) {
-        //     notification.error("This file has been flagged as copyrighted.");
-        //     return;
-        //   }
-        // }
+          if (highScore) {
+            notification.error("This file has been flagged as copyrighted.");
+            return;
+          }
+        }
 
         const result = await ipfs.add(buffer);
         const fileIpfsUrl = `http://localhost:8080/ipfs/${result.path}`;
