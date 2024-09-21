@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import SongList from "~~/app/mymusic/_components/SongList";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
@@ -20,18 +21,22 @@ const ArtistPortfolio: React.FC<PortfolioProps> = ({ artistAddress }) => {
     args: [artistAddress],
   });
 
-  const songList = [];
+  const songList = songs ? songs.map((song: bigint) => Number(song)) : [];
 
-  if (songs?.length) {
-    for (let i = 0; i < songs?.length; i++) {
-      songList.push(Number(songs[i]));
+  const [currentPlayingId, setCurrentPlayingId] = useState<number | null>(null); // Track the currently playing song
+
+  const handlePlay = (songId: number) => {
+    if (currentPlayingId !== null && currentPlayingId !== songId) {
+      // If a song is currently playing and it's not the same as the clicked one, stop it
+      setCurrentPlayingId(null); // This will stop the current song in the Song component
     }
-  }
+    setCurrentPlayingId(songId); // Set the new song to play
+  };
 
   return (
     <>
-      <h1>{artistName}</h1>
-      <SongList songs={songList} />
+      <h1 className="text-2xl font-bold">{artistName || "Unknown Artist"}</h1>
+      <SongList songs={songList} onPlay={handlePlay} currentPlayingId={currentPlayingId} />
     </>
   );
 };

@@ -6,19 +6,28 @@ import { useFetchTokenURI } from "./useFetchTokenUri";
 
 interface SongListProps {
   songs: number[];
+  onPlay: (songId: number) => void; // Function to handle play event
+  currentPlayingId: number | null; // The currently playing song ID
 }
 
-const SongList: React.FC<SongListProps> = ({ songs }) => {
+const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) => {
   return (
     <div>
       {songs.length > 0 ? (
-        songs.map((songId, index) => {
+        songs.map(songId => {
           const metadata = useFetchTokenURI(BigInt(songId));
 
           return (
-            <div key={index}>
+            <div key={songId}>
+              {" "}
               {metadata?.fileUrl ? (
-                <Song songCID={metadata.fileUrl} metadataCID={JSON.stringify(metadata)} />
+                <Song
+                  songCID={metadata.fileUrl}
+                  metadataCID={JSON.stringify(metadata)}
+                  songId={songId} // Pass songId to Song component
+                  onPlay={onPlay} // Pass onPlay function
+                  songIsPlaying={currentPlayingId === songId} // Determine if the current song is playing
+                />
               ) : (
                 <p>Loading song {songId}...</p>
               )}

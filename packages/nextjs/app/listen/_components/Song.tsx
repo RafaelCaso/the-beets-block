@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Howl } from "howler";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface SongProps {
-  songCID: string; // ipfs url
+  songCID: string; // IPFS URL
   metadataCID: string; // JSON
+  songId: number; // ID of the song
+  onPlay: (songId: number) => void; // handle play
+  songIsPlaying: boolean; // Whether this song is currently playing
 }
 
-const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
+const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songIsPlaying }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0); // Track current song time
-  const [duration, setDuration] = useState(0); // Track total song duration
+  const [currentTime, setCurrentTime] = useState(0); // current song time
+  const [duration, setDuration] = useState(0); // total song duration
   const [metadata, setMetadata] = useState<{
     title?: string;
     artist?: string;
@@ -23,7 +24,6 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
   }>({});
   const howlerRef = useRef<Howl | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const meta = JSON.parse(metadataCID);
@@ -33,7 +33,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
 
     howlerRef.current = new Howl({
       src: [songCID],
-      loop: false, // Not looping for the tracker to work well
+      loop: false,
       volume: 1.0,
       format: ["mp3", "ogg"],
       onload: () => {
@@ -41,6 +41,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
       },
       onend: () => {
         setIsPlaying(false); // Stop when the song ends
+        setCurrentTime(0); // Reset current time
       },
     });
 
@@ -50,16 +51,28 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
   }, [songCID, metadataCID]);
 
   useEffect(() => {
-    let interval: number | undefined;
+    const updateCurrentTime = () => {
+      if (howlerRef.current) {
+        setCurrentTime(howlerRef.current.seek());
+      }
+    };
+
     if (isPlaying) {
-      interval = window.setInterval(() => {
-        setCurrentTime(howlerRef.current?.seek() as number); // Update current song time
-      }, 1000);
-    } else if (!isPlaying && currentTime !== 0) {
-      clearInterval(interval);
+      const interval = setInterval(updateCurrentTime, 1000); // Update current time every second
+      return () => clearInterval(interval);
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTime]);
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (songIsPlaying && !isPlaying) {
+      howlerRef.current?.play();
+      setIsPlaying(true);
+      onPlay(songId); // Notify parent that this song is playing
+    } else if (!songIsPlaying && isPlaying) {
+      howlerRef.current?.pause();
+      setIsPlaying(false);
+    }
+  }, [songIsPlaying]);
 
   const togglePlay = () => {
     if (howlerRef.current) {
@@ -67,6 +80,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
         howlerRef.current.pause();
       } else {
         howlerRef.current.play();
+        onPlay(songId); // Notify parent that this song is playing
       }
       setIsPlaying(!isPlaying);
     }
@@ -83,21 +97,11 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID }) => {
     }
   };
 
-  const handleClick = () => {
-    router.push("/artist-portfolio?artistAddress=" + metadata.artistAddress);
-  };
-
   return (
-    <div
-      // onClick={handleClick}
-      className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto transition-transform duration-300 transform"
-    >
+    <div className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto transition-transform duration-300 transform">
       {/* Play/Pause Button */}
       <button
-        onClick={e => {
-          e.stopPropagation();
-          togglePlay();
-        }}
+        onClick={togglePlay}
         className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center focus:outline-none mr-4 hover:scale-125 hover:bg-gray-700"
       >
         {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play</span>}
