@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ArtistPortfolio from "../artist-portfolio/_components/ArtistPortfolio";
 import SongList from "./_components/SongList";
 import { NextPage } from "next";
 import { useAccount } from "wagmi";
@@ -28,9 +29,12 @@ const MyMusic: NextPage = () => {
     setPlayingSongId(songId);
   };
 
+  if (!connectedAddress) {
+    return <h1>404</h1>;
+  }
   return (
     <>
-      <SongList songs={songList} onPlay={handlePlay} currentPlayingId={playingSongId} />
+      <ArtistPortfolio artistAddress={connectedAddress} />
     </>
   );
 };

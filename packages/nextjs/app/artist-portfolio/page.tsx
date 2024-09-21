@@ -19,7 +19,6 @@ const Portfolio: NextPage = () => {
   }
   return (
     <>
-      <h1>Artist Portfolio Page</h1>
       <ArtistPortfolio artistAddress={artistAddress} />
     </>
   );
