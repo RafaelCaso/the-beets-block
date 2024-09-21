@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import SongList from "./_components/SongList";
 import { NextPage } from "next";
 import { useAccount } from "wagmi";
@@ -21,9 +22,15 @@ const MyMusic: NextPage = () => {
     }
   }
 
+  const [playingSongId, setPlayingSongId] = useState<number | null>(null);
+
+  const handlePlay = (songId: number) => {
+    setPlayingSongId(songId);
+  };
+
   return (
     <>
-      <SongList songs={songList} />
+      <SongList songs={songList} onPlay={handlePlay} currentPlayingId={playingSongId} />
     </>
   );
 };
