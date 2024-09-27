@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SongList from "~~/app/mymusic/_components/SongList";
+import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface PortfolioProps {
@@ -35,8 +36,12 @@ const ArtistPortfolio: React.FC<PortfolioProps> = ({ artistAddress }) => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold">{artistName || "Unknown Artist"}</h1>
-      <SongList songs={songList} onPlay={handlePlay} currentPlayingId={currentPlayingId} />
+      <div className="bg-gray-900">
+        <div className="flex items-center m-10 justify-center">
+          <h1 className="text-2xl font-bold text-white m-8">Music by {artistName || "Unknown Artist"}</h1>
+        </div>
+        <SongList songs={songList} onPlay={handlePlay} currentPlayingId={currentPlayingId} />
+      </div>
     </>
   );
 };

@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { Howl } from "howler";
+import { parseEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 
 interface SongProps {
-  songCID: string; // IPFS URL
-  metadataCID: string; // JSON
-  songId: number; // ID of the song
-  onPlay: (songId: number) => void; // handle play
-  songIsPlaying: boolean; // Whether this song is currently playing
+  songCID: string;
+  metadataCID: string;
+  songId: number;
+  onPlay: (songId: number) => void;
+  songIsPlaying: boolean;
 }
 
 const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songIsPlaying }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0); // current song time
-  const [duration, setDuration] = useState(0); // total song duration
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [metadata, setMetadata] = useState<{
     title?: string;
     artist?: string;
@@ -22,12 +26,32 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     uploadTime?: string;
     artistAddress?: string;
   }>({});
+  const [contributionCount, setContributionCount] = useState(0);
+
   const howlerRef = useRef<Howl | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const { writeContractAsync: writeSoundChainAsync } = useScaffoldWriteContract("SoundChain");
 
+  const { data: songPatronized, isLoading: songPatronizedLoading } = useScaffoldEventHistory({
+    contractName: "SoundChain",
+    eventName: "PatronizeMusician",
+    fromBlock: 0n,
+    watch: true,
+  });
+
+  // count how many contributions for song component
+  useEffect(() => {
+    if (songPatronized) {
+      const songContributions = songPatronized.filter((event: any) => event.args.songId === BigInt(songId));
+
+      setContributionCount(songContributions.length);
+    }
+  }, [songPatronized, songId]);
+
+  // populate data and music
   useEffect(() => {
     const meta = JSON.parse(metadataCID);
-    const humanReadableTime = new Date(meta.uploadTime * 1000).toString();
+    const humanReadableTime = new Date(meta.uploadTime * 1000).toDateString();
     meta.uploadTime = humanReadableTime;
     setMetadata(meta);
 
@@ -37,11 +61,11 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
       volume: 1.0,
       format: ["mp3", "ogg"],
       onload: () => {
-        setDuration(howlerRef.current?.duration() || 0); // Set total song duration
+        setDuration(howlerRef.current?.duration() || 0);
       },
       onend: () => {
-        setIsPlaying(false); // Stop when the song ends
-        setCurrentTime(0); // Reset current time
+        setIsPlaying(false);
+        setCurrentTime(0);
       },
     });
 
@@ -50,6 +74,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     };
   }, [songCID, metadataCID]);
 
+  // update progress bar
   useEffect(() => {
     const updateCurrentTime = () => {
       if (howlerRef.current) {
@@ -58,16 +83,17 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     };
 
     if (isPlaying) {
-      const interval = setInterval(updateCurrentTime, 1000); // Update current time every second
+      const interval = setInterval(updateCurrentTime, 1000);
       return () => clearInterval(interval);
     }
   }, [isPlaying]);
 
+  // pause song if another is selected by user
   useEffect(() => {
     if (songIsPlaying && !isPlaying) {
       howlerRef.current?.play();
       setIsPlaying(true);
-      onPlay(songId); // Notify parent that this song is playing
+      onPlay(songId);
     } else if (!songIsPlaying && isPlaying) {
       howlerRef.current?.pause();
       setIsPlaying(false);
@@ -80,19 +106,29 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
         howlerRef.current.pause();
       } else {
         howlerRef.current.play();
-        onPlay(songId); // Notify parent that this song is playing
+        onPlay(songId);
       }
       setIsPlaying(!isPlaying);
     }
   };
 
-  // Function to handle seeking
+  const handleContributeBtn = async () => {
+    await writeSoundChainAsync({
+      functionName: "contribute",
+      args: [metadata.artistAddress, BigInt(songId)],
+      value: parseEther("1"),
+    });
+
+    notification.success("Thank you so much for patroning the arts! You're an absolute legend.");
+  };
+
+  // allow user to click on progress bar to move around song
   const handleSeek = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (howlerRef.current && progressRef.current) {
       const rect = progressRef.current.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
-      const seekTime = (clickX / rect.width) * duration; // Calculate seek time
-      howlerRef.current.seek(seekTime); // Set Howler's current time
+      const seekTime = (clickX / rect.width) * duration;
+      howlerRef.current.seek(seekTime);
       setCurrentTime(seekTime);
     }
   };
@@ -148,6 +184,16 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
         <div className="mt-2">
           <Address address={metadata.artistAddress} />
         </div>
+
+        <div className="p-6">
+          <button
+            onClick={handleContributeBtn}
+            className="w-full bg-orange-500 p-3 rounded-lg text-white transition-colors hover:bg-orange-600"
+          >
+            Contribute
+          </button>
+        </div>
+        <div className="text-sm mt-2 text-gray-400">Contributions: {contributionCount}</div>
       </div>
     </div>
   );

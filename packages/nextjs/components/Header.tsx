@@ -5,13 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
-import { ArrowUpIcon } from "@heroicons/react/20/solid";
+import { ArrowUpIcon, UserIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { MusicalNoteIcon } from "@heroicons/react/24/outline";
 import { HomeIcon } from "@heroicons/react/24/solid";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
-// Assuming global state for registration
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
@@ -35,10 +34,6 @@ const menuLinks: HeaderMenuLink[] = [
     label: "Listen",
     href: "/listen",
     icon: <MusicalNoteIcon className="h-4 w-4" />,
-  },
-  {
-    label: "My Music",
-    href: "/mymusic",
   },
 ];
 
@@ -65,12 +60,17 @@ export const HeaderMenuLinks = () => {
 
   const dynamicMenuLinks = [...menuLinks];
 
-  // Conditionally add "Upload" link if the user is registered
+  // Conditionally add links if the user is registered
   if (isRegistered) {
     dynamicMenuLinks.push({
       label: "Upload",
       href: "/upload",
       icon: <ArrowUpIcon className="h-4 w-4" />,
+    });
+    dynamicMenuLinks.push({
+      label: "My Music",
+      href: "/mymusic",
+      icon: <UserIcon className="h-4 w-4" />,
     });
   }
 
@@ -143,8 +143,8 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
+            <span className="font-bold leading-tight">Sound-Scaffold</span>
+            <span className="text-xs"></span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

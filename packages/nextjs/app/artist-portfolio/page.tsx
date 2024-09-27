@@ -8,8 +8,6 @@ const Portfolio: NextPage = () => {
   const searchParams = useSearchParams();
   const artistAddress = searchParams?.get("artistAddress");
 
-  console.log(artistAddress);
-
   if (!artistAddress) {
     return (
       <>

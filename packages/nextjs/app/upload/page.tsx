@@ -1,10 +1,10 @@
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { create } from "ipfs-http-client";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-// import { musicGenres } from "~~/utils/musicGenres";
+import { musicGenres } from "~~/utils/musicGenres";
 import { notification } from "~~/utils/scaffold-eth";
 
 const ipfs = create({ host: "localhost", port: 5001, protocol: "http" });
@@ -17,6 +17,10 @@ const UploadMusic: React.FC = () => {
   const [fileUrl, setFileUrl] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
+  const [genrePresets, setGenrePresets] = useState<string[]>([]);
+  const [checkingCopyright, setCheckingCopyright] = useState<boolean>(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: artistName } = useScaffoldReadContract({
     contractName: "SoundChain",
@@ -25,6 +29,7 @@ const UploadMusic: React.FC = () => {
   });
 
   const checkCopyright = async (fileBuffer: ArrayBuffer) => {
+    notification.info("Checking for copyright...");
     try {
       const response = await fetch("/api/check-copyright", {
         method: "POST",
@@ -51,6 +56,18 @@ const UploadMusic: React.FC = () => {
     setFile(selectedFile);
   };
 
+  const handleGenreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    setGenre(value);
+
+    if (value) {
+      const filteredSuggestions = musicGenres.filter(symbol => symbol.startsWith(value.toLowerCase()));
+      setGenrePresets(filteredSuggestions);
+    } else {
+      setGenrePresets([]);
+    }
+  };
+
   const handleUpload = async () => {
     if (!connectedAddress) {
       notification.error("Please sign in before uploading");
@@ -64,46 +81,44 @@ const UploadMusic: React.FC = () => {
     try {
       const reader = new FileReader();
 
-      reader.readAsArrayBuffer(file);
       reader.onloadend = async () => {
+        setCheckingCopyright(true);
         const buffer = reader.result as ArrayBuffer;
-        // **************************************************
-        // ****     VERY IMPORTANT!!!!!!!                 ***
-        // ****     Uncomment below for copyright check   ***
-        // **************************************************
-        const checkResult = await checkCopyright(buffer);
 
-        if (checkResult.metadata && checkResult.metadata.music) {
-          const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
+        /*
+         ************* COPYRIGHT CHECK **************
+         */
+        // const checkResult = await checkCopyright(buffer);
 
-          if (highScore) {
-            notification.error("This file has been flagged as copyrighted.");
-            return;
-          }
-        }
+        // if (checkResult.metadata && checkResult.metadata.music) {
+        //   const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
+
+        //   if (highScore) {
+        //     notification.error("This file has been flagged as copyrighted.");
+        //     resetForm();
+        //     setCheckingCopyright(false);
+        //     return;
+        //   }
+        // }
 
         const result = await ipfs.add(buffer);
         const fileIpfsUrl = `http://localhost:8080/ipfs/${result.path}`;
         setFileUrl(fileIpfsUrl);
 
         const currentDateTime = new Date();
-        // Store unixTimeStamp in metadata
         const unixTimeStamp = Math.floor(currentDateTime.getTime() / 1000);
 
-        // Create metadata
         const metadata = {
           artist: artistName,
           title: name,
-          genre: genre.toLowerCase(),
+          genre: genre,
           fileUrl: fileIpfsUrl,
           uploadTime: unixTimeStamp,
           artistAddress: connectedAddress,
         };
 
-        // Upload metadata to IPFS
         const metadataBuffer = Buffer.from(JSON.stringify(metadata));
         const metadataResult = await ipfs.add(metadataBuffer);
-        // const metadataUrl = `http://localhost:8080/ipfs/${metadataResult.path}`;
         const metadataUrl = metadataResult.path;
 
         await writeSoundChainAsync({
@@ -111,11 +126,27 @@ const UploadMusic: React.FC = () => {
           args: [connectedAddress, metadataUrl],
         });
 
-        console.log("File uploaded to IPFS:", fileIpfsUrl);
-        console.log("Metadata uploaded to IPFS:", metadataUrl);
+        notification.success("File uploaded!");
+        resetForm();
       };
+
+      reader.readAsArrayBuffer(file);
     } catch (error) {
       console.error("Error uploading file to IPFS:", error);
+      notification.error("Failed to upload the file.");
+    } finally {
+      setCheckingCopyright(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFile(null);
+    setFileUrl("");
+    setName("");
+    setGenre("");
+    setCheckingCopyright(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -136,33 +167,43 @@ const UploadMusic: React.FC = () => {
           type="text"
           placeholder="Genre"
           value={genre}
-          onChange={e => setGenre(e.target.value)}
+          onChange={handleGenreChange}
           className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
         />
+        {genrePresets.length > 0 && (
+          <ul className="menu bg-primary-focus w-full rounded-md mt-1 max-h-40 overflow-auto">
+            {genrePresets.map(preset => (
+              <li
+                key={preset}
+                onClick={e => {
+                  e.stopPropagation();
+                  setGenre(preset);
+                  setGenrePresets([]);
+                }}
+              >
+                <a className="text-white hover:bg-primary">{preset}</a>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <input
           type="file"
           accept="audio/*"
           onChange={handleFileChange}
+          ref={fileInputRef}
           className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-100 hover:file:bg-gray-600 mb-4"
         />
 
         <button
           onClick={handleUpload}
-          className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors"
+          className={`w-full bg-orange-500 p-3 rounded-lg text-white transition-colors ${
+            checkingCopyright ? "cursor-not-allowed opacity-50 bg-gray-500" : "hover:bg-orange-600"
+          }`}
+          disabled={checkingCopyright}
         >
-          Upload
+          {checkingCopyright ? "Uploading..." : "Upload"}
         </button>
-
-        {fileUrl && (
-          <div className="mt-6 text-center">
-            <p className="text-lg font-medium">File uploaded to IPFS:</p>
-            <audio controls className="mt-2 w-full">
-              <source src={fileUrl} type="audio/mpeg" />
-              Your browser does not support the audio element.
-            </audio>
-          </div>
-        )}
       </div>
     </div>
   );

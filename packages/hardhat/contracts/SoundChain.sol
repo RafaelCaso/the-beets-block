@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SoundChain is ERC721, ERC721URIStorage, Ownable {
 
   event SongUploaded(uint256 indexed songId, string artist);
+  event PatronizeMusician(address patron, address artist, uint256 value, uint256 indexed songId);
 
   mapping(address => string) public artistNames;
   mapping(address => uint256[]) public artistSongs;
@@ -30,12 +31,13 @@ contract SoundChain is ERC721, ERC721URIStorage, Ownable {
     if(bytes(artistNames[_user]).length > 0) {
       return true;
     }
-    // for(uint i = 0; i < accounts.length; i++) {
-    //   if(accounts[i] == _user) {
-    //     return true;
-    //   }
-    // }
     return false;
+  }
+
+  function contribute(address payable _artist, uint256 _songId) payable public {
+    (bool sent, ) = _artist.call{value: msg.value}("");
+    require(sent, "Failed to send Ether");
+    emit PatronizeMusician(msg.sender, _artist, msg.value, _songId);
   }
 
 

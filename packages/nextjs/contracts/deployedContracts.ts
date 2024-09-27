@@ -119,6 +119,37 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
+              indexed: false,
+              internalType: "address",
+              name: "patron",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "artist",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "songId",
+              type: "uint256",
+            },
+          ],
+          name: "PatronizeMusician",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
               indexed: true,
               internalType: "uint256",
               name: "songId",
@@ -275,6 +306,24 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address payable",
+              name: "_artist",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_songId",
+              type: "uint256",
+            },
+          ],
+          name: "contribute",
+          outputs: [],
+          stateMutability: "payable",
           type: "function",
         },
         {

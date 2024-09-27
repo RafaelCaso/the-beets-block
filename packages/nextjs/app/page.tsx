@@ -50,6 +50,8 @@ const Home: NextPage = () => {
       return;
     }
 
+    setArtistName("");
+
     const txHash = await writeSoundChainAsync({
       functionName: "registerAccount",
       args: [artistName],
@@ -85,12 +87,14 @@ const Home: NextPage = () => {
                 onChange={e => setArtistName(e.target.value)}
                 className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
               />
-              <button
-                className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors"
-                onClick={handleRegister}
-              >
-                Register
-              </button>
+              <div className="flex items-center justify-center">
+                <button
+                  className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors justify-center"
+                  onClick={handleRegister}
+                >
+                  Register
+                </button>
+              </div>
             </div>
           </div>
         )}
