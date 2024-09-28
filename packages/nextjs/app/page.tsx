@@ -72,26 +72,6 @@ const Home: NextPage = () => {
   if (!isRegisteredError) {
     return (
       <>
-        <div className="p-6">
-          <button
-            onClick={openModal}
-            className="w-full bg-orange-500 p-3 rounded-lg text-white transition-colors hover:bg-orange-600"
-          >
-            Contribute to Sound Scaffold
-          </button>
-          {isModalOpen && (
-            // **************************************************************
-            // I THINK THIS IS A BAD IDEA USING PATRONIZEARTIST TO FUND THE CONTRACT DIRECTLY. THERE'S SOME UNSEEN PROBLEMS WITH THIS AND IT'S BETTER TO JUST DO IT A DIFFERENT WAY
-            // ***************************************************************
-            // <PatronizeArtist
-            //   title="Sound Scaffold"
-            //   artistAddress="0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
-            //   closeModal={closeModal}
-            //   songId={0}
-            // />
-            <SoundContribution closeModal={closeModal} />
-          )}
-        </div>
         {isRegistered ? (
           <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
             <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
@@ -129,6 +109,15 @@ const Home: NextPage = () => {
             </div>
           </div>
         )}
+        <div className="p-6">
+          <button
+            onClick={openModal}
+            className="w-full bg-orange-500 p-3 rounded-lg text-white transition-colors hover:bg-orange-600"
+          >
+            Contributions to Sound Scaffold are welcome and greatly appreciated!
+          </button>
+          {isModalOpen && <SoundContribution closeModal={closeModal} />}
+        </div>
       </>
     );
   } else {

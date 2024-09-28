@@ -23,9 +23,11 @@ const SoundContribution: React.FC<SoundContributionProps> = ({ closeModal }) => 
     try {
       await connectedAddress?.sendTransaction(tx);
       notification.success("Thank you so much for patroning the arts! You're an absolute legend!");
+      closeModal();
     } catch (error) {
       notification.error("Oh no, somethign went wrong");
       console.error(error);
+      closeModal();
     }
   };
 

@@ -16,14 +16,14 @@ const Listen = () => {
 
   useEffect(() => {
     if (uploadedSongEvents && !uploadedSongsIsLoading) {
-      const songIdArray: number[] = [];
+      const songIdSet = new Set<number>();
       uploadedSongEvents.forEach(e => {
         if (e.args.songId) {
-          songIdArray.push(Number(e.args.songId));
+          songIdSet.add(Number(e.args.songId));
         }
       });
 
-      setSongs(songIdArray);
+      setSongs(Array.from(songIdSet));
     }
   }, [uploadedSongEvents]);
 
