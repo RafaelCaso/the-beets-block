@@ -3,6 +3,7 @@ import { Howl } from "howler";
 import { parseEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
+import PatronizeArtist from "~~/components/scaffold-eth/PatronizeArtist";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -27,10 +28,10 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     artistAddress?: string;
   }>({});
   const [contributionCount, setContributionCount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   const howlerRef = useRef<Howl | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const { writeContractAsync: writeSoundChainAsync } = useScaffoldWriteContract("SoundChain");
 
   const { data: songPatronized, isLoading: songPatronizedLoading } = useScaffoldEventHistory({
     contractName: "SoundChain",
@@ -112,14 +113,12 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     }
   };
 
-  const handleContributeBtn = async () => {
-    await writeSoundChainAsync({
-      functionName: "contribute",
-      args: [metadata.artistAddress, BigInt(songId)],
-      value: parseEther("1"),
-    });
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
-    notification.success("Thank you so much for patroning the arts! You're an absolute legend.");
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   // allow user to click on progress bar to move around song
@@ -185,9 +184,10 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
           <Address address={metadata.artistAddress} />
         </div>
 
+        {/* Contributions */}
         <div className="p-6">
           <button
-            onClick={handleContributeBtn}
+            onClick={openModal}
             className="w-full bg-orange-500 p-3 rounded-lg text-white transition-colors hover:bg-orange-600"
           >
             Contribute
@@ -195,6 +195,16 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
         </div>
         <div className="text-sm mt-2 text-gray-400">Contributions: {contributionCount}</div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <PatronizeArtist
+          title={metadata.title || "unknown title"}
+          artistAddress={metadata.artistAddress!}
+          songId={songId}
+          closeModal={closeModal}
+        />
+      )}
     </div>
   );
 };

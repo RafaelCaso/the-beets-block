@@ -5,6 +5,8 @@ import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
+import PatronizeArtist from "~~/components/scaffold-eth/PatronizeArtist";
+import SoundContribution from "~~/components/scaffold-eth/SoundContribution";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
@@ -14,6 +16,15 @@ const Home: NextPage = () => {
   const { writeContractAsync: writeSoundChainAsync } = useScaffoldWriteContract("SoundChain");
 
   const [artistName, setArtistName] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const { data: isRegistered, error: isRegisteredError } = useScaffoldReadContract({
     contractName: "SoundChain",
@@ -52,7 +63,7 @@ const Home: NextPage = () => {
 
     setArtistName("");
 
-    const txHash = await writeSoundChainAsync({
+    await writeSoundChainAsync({
       functionName: "registerAccount",
       args: [artistName],
     });
@@ -61,6 +72,26 @@ const Home: NextPage = () => {
   if (!isRegisteredError) {
     return (
       <>
+        <div className="p-6">
+          <button
+            onClick={openModal}
+            className="w-full bg-orange-500 p-3 rounded-lg text-white transition-colors hover:bg-orange-600"
+          >
+            Contribute to Sound Scaffold
+          </button>
+          {isModalOpen && (
+            // **************************************************************
+            // I THINK THIS IS A BAD IDEA USING PATRONIZEARTIST TO FUND THE CONTRACT DIRECTLY. THERE'S SOME UNSEEN PROBLEMS WITH THIS AND IT'S BETTER TO JUST DO IT A DIFFERENT WAY
+            // ***************************************************************
+            // <PatronizeArtist
+            //   title="Sound Scaffold"
+            //   artistAddress="0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+            //   closeModal={closeModal}
+            //   songId={0}
+            // />
+            <SoundContribution closeModal={closeModal} />
+          )}
+        </div>
         {isRegistered ? (
           <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
             <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
