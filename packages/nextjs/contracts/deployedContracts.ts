@@ -161,6 +161,18 @@ const deployedContracts = {
               name: "artist",
               type: "string",
             },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "genre",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "title",
+              type: "string",
+            },
           ],
           name: "SongUploaded",
           type: "event",
@@ -398,6 +410,16 @@ const deployedContracts = {
             {
               internalType: "string",
               name: "uri",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "genre",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "title",
               type: "string",
             },
           ],

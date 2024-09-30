@@ -123,7 +123,7 @@ const UploadMusic: React.FC = () => {
 
         await writeSoundChainAsync({
           functionName: "mintItem",
-          args: [connectedAddress, metadataUrl],
+          args: [connectedAddress, metadataUrl, metadata.genre, metadata.title],
         });
 
         notification.success("File uploaded!");

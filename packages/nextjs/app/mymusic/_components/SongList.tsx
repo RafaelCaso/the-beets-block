@@ -66,7 +66,7 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) 
   }, [songs]);
 
   return (
-    <div>
+    <div className="w-full flex flex-col items-start">
       {songs.length > 0 ? (
         songs.map(songId => {
           const metadata = songMetadata[songId];
@@ -77,8 +77,8 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) 
                 <Song
                   songCID={metadata.fileUrl}
                   metadataCID={JSON.stringify(metadata)}
-                  songId={songId} // Pass songId to Song component
-                  onPlay={onPlay} // Pass onPlay function
+                  songId={songId}
+                  onPlay={onPlay}
                   songIsPlaying={currentPlayingId === songId} // Determine if the current song is playing
                 />
               ) : (

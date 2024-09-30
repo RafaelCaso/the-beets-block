@@ -34,7 +34,9 @@ const MyMusic: NextPage = () => {
   }
   return (
     <>
-      <ArtistPortfolio artistAddress={connectedAddress} />
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <ArtistPortfolio artistAddress={connectedAddress} />
+      </div>
     </>
   );
 };

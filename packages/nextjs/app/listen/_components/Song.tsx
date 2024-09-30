@@ -133,11 +133,11 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
   };
 
   return (
-    <div className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 w-2/3 mx-auto transition-transform duration-300 transform">
+    <div className="flex items-center bg-gray-800 text-white p-4 rounded-lg shadow-lg my-4 transition-transform duration-300 transform w-full sm:w-[400px] md:w-[1000px]">
       {/* Play/Pause Button */}
       <button
         onClick={togglePlay}
-        className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center focus:outline-none mr-4 hover:scale-125 hover:bg-gray-700"
+        className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center focus:outline-none mr-4 hover:scale-125 hover:bg-gray-700"
       >
         {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play</span>}
       </button>

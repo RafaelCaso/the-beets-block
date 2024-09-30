@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SoundChain is ERC721, ERC721URIStorage, Ownable {
 
-  event SongUploaded(uint256 indexed songId, string artist);
+  event SongUploaded(uint256 indexed songId, string artist, string genre, string title);
   event PatronizeMusician(address patron, address artist, uint256 value, uint256 indexed songId);
 
   mapping(address => string) public artistNames;
@@ -51,14 +51,14 @@ contract SoundChain is ERC721, ERC721URIStorage, Ownable {
 		// return "ipfs://";
 	}
 
-  function mintItem(address to, string memory uri) public payable returns (uint256) {
+  function mintItem(address to, string memory uri, string memory genre, string memory title) public payable returns (uint256) {
       nextTokenId += 1;
       uint256 tokenId = nextTokenId;
 
       _safeMint(to, tokenId);
       _setTokenURI(tokenId, uri);
       artistSongs[to].push(tokenId);
-      emit SongUploaded(tokenId, artistNames[to]);
+      emit SongUploaded(tokenId, artistNames[to], genre, title);
       return tokenId;
   }
 
