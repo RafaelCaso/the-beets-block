@@ -44,7 +44,7 @@ export const HeaderMenuLinks = () => {
 
   // Fetch artistName using the contract to ensure registration
   const { data: artistName } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "artistNames",
     args: [connectedAddress],
   });

@@ -11,7 +11,7 @@ const ipfs = create({ host: "localhost", port: 5001, protocol: "http" });
 
 const UploadMusic: React.FC = () => {
   const { address: connectedAddress } = useAccount();
-  const { writeContractAsync: writeSoundChainAsync } = useScaffoldWriteContract("SoundChain");
+  const { writeContractAsync: writeSoundScaffoldAsync } = useScaffoldWriteContract("SoundScaffold");
 
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string>("");
@@ -23,7 +23,7 @@ const UploadMusic: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: artistName } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "artistNames",
     args: [connectedAddress],
   });
@@ -121,7 +121,7 @@ const UploadMusic: React.FC = () => {
         const metadataResult = await ipfs.add(metadataBuffer);
         const metadataUrl = metadataResult.path;
 
-        await writeSoundChainAsync({
+        await writeSoundScaffoldAsync({
           functionName: "mintItem",
           args: [connectedAddress, metadataUrl, metadata.genre, metadata.title],
         });

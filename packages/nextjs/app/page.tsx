@@ -13,7 +13,7 @@ import { notification } from "~~/utils/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const { writeContractAsync: writeSoundChainAsync } = useScaffoldWriteContract("SoundChain");
+  const { writeContractAsync: writeSoundScaffoldAsync } = useScaffoldWriteContract("SoundScaffold");
 
   const [artistName, setArtistName] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -27,13 +27,13 @@ const Home: NextPage = () => {
   };
 
   const { data: isRegistered, error: isRegisteredError } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "accountExists",
     args: [connectedAddress],
   });
 
   const { data: userArtistName, isFetched } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "artistNames",
     args: [connectedAddress],
   });
@@ -63,7 +63,7 @@ const Home: NextPage = () => {
 
     setArtistName("");
 
-    await writeSoundChainAsync({
+    await writeSoundScaffoldAsync({
       functionName: "registerAccount",
       args: [artistName],
     });

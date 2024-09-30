@@ -11,13 +11,13 @@ interface PortfolioProps {
 
 const ArtistPortfolio: React.FC<PortfolioProps> = ({ artistAddress }) => {
   const { data: artistName } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "artistNames",
     args: [artistAddress],
   });
 
   const { data: songs } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "getSongs",
     args: [artistAddress],
   });

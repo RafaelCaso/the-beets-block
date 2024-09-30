@@ -3,7 +3,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export const useFetchTokenURI = (songId: bigint | undefined) => {
   const { data: songUrl } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "tokenURI",
     args: [songId],
   });

@@ -10,7 +10,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 const MyMusic: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const { data: songs } = useScaffoldReadContract({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     functionName: "getSongs",
     args: [connectedAddress],
   });

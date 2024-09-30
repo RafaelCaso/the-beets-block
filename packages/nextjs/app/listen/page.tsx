@@ -19,7 +19,7 @@ const Listen = () => {
   const [currentPlayingId, setCurrentPlayingId] = useState<number | null>(null);
 
   const { data: uploadedSongEvents, isLoading: uploadedSongsIsLoading } = useScaffoldEventHistory({
-    contractName: "SoundChain",
+    contractName: "SoundScaffold",
     eventName: "SongUploaded",
     fromBlock: 0n,
     watch: true,
@@ -62,6 +62,7 @@ const Listen = () => {
   const handleSearchClick = () => {
     if (!searchQuery) {
       setFilteredSongs(songDetails); // Show all songs if no search query
+      setSearchQuery("");
     } else {
       const lowercasedSearch = searchQuery.toLowerCase();
       const filtered = songDetails.filter(
@@ -71,6 +72,7 @@ const Listen = () => {
           song.genre.toLowerCase().includes(lowercasedSearch),
       );
       setFilteredSongs(filtered);
+      setSearchQuery("");
     }
   };
 

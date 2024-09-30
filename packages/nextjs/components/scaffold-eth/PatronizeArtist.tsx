@@ -14,10 +14,10 @@ interface PatronizeArtistProps {
 const PatronizeArtist: React.FC<PatronizeArtistProps> = ({ title, artistAddress, songId, closeModal }) => {
   const [contributionAmount, setContributionAmount] = useState("");
 
-  const { writeContractAsync: writeSoundChainAsync } = useScaffoldWriteContract("SoundChain");
+  const { writeContractAsync: writeSoundScaffoldAsync } = useScaffoldWriteContract("SoundScaffold");
 
   const handleContributeBtn = async () => {
-    await writeSoundChainAsync({
+    await writeSoundScaffoldAsync({
       functionName: "contribute",
       args: [artistAddress, BigInt(songId)],
       value: parseEther(contributionAmount),

@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 
 
-contract SoundChain is ERC721, ERC721URIStorage, Ownable {
+contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 
   event SongUploaded(uint256 indexed songId, string artist, string genre, string title);
   event PatronizeMusician(address patron, address artist, uint256 value, uint256 indexed songId);
@@ -19,7 +19,7 @@ contract SoundChain is ERC721, ERC721URIStorage, Ownable {
 
   uint256 public nextTokenId = 0;
 
-  constructor() ERC721("Sound Chain", "SCH") {}
+  constructor() ERC721("Sound Scaffold", "SONG") {}
 
   function registerAccount(string calldata _artistName) external {
     require(bytes(artistNames[msg.sender]).length == 0, "Artist name already registered");
@@ -65,7 +65,7 @@ contract SoundChain is ERC721, ERC721URIStorage, Ownable {
 
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
-        require(balance > 0, "No Canto available to withdraw");
+        require(balance > 0, "No funds available to withdraw");
 
         (bool sent, ) = owner().call{value: address(this).balance}("");
         require(sent, "Failed to withdraw");

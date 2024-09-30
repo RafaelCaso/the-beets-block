@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 // ***********************************************************
 // MAKE SURE ABI IS AVAILABLE IN NEXT PACKAGE BEFORE DEPLOYING
 // ***********************************************************
-import abi from "../../../../hardhat/artifacts/contracts/SoundChain.sol/SoundChain.json";
+import abi from "../../../../hardhat/artifacts/contracts/SoundScaffold.sol/SoundScaffold.json";
 import Song from "../../listen/_components/Song";
 import { readContract } from "@wagmi/core";
 import { config } from "~~/wagmiConfig";
