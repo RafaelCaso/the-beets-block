@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-// ***********************************************************
-// MAKE SURE ABI IS AVAILABLE IN NEXT PACKAGE BEFORE DEPLOYING
-// ***********************************************************
+import { useEffect, useRef, useState } from "react";
+import { MutableRefObject } from "react";
 import abi from "../../../../hardhat/artifacts/contracts/SoundScaffold.sol/SoundScaffold.json";
 import Song from "../../listen/_components/Song";
 import { readContract } from "@wagmi/core";
@@ -9,16 +7,14 @@ import { config } from "~~/wagmiConfig";
 
 interface SongListProps {
   songs: number[];
-  onPlay: (songId: number) => void; // Function to handle play event
-  currentPlayingId: number | null; // The currently playing song ID
+  onPlay: (songId: number) => void;
+  currentPlayingId: number | null;
+  scrollToSongId?: number | null;
+  songRefs?: MutableRefObject<{ [key: number]: HTMLDivElement | null }>;
 }
 
-// ************************************************
-// ***** MAKE SURE TO ADJUST CONTRACT ADDRESS *****
-// ************************************************
 const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
-// use wagmi to get around react hook error (different amount of rerenders)
 const fetchTokenURI = async (songId: bigint) => {
   try {
     const songUrl = await readContract(config, {
@@ -39,8 +35,9 @@ const fetchTokenURI = async (songId: bigint) => {
   }
 };
 
-const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) => {
+const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, scrollToSongId }) => {
   const [songMetadata, setSongMetadata] = useState<{ [key: number]: { fileUrl?: string } | null }>({});
+  const songRefs = useRef<{ [key: number]: HTMLDivElement | null }>({}); // Refs for each song div
 
   useEffect(() => {
     const fetchAllMetadata = async () => {
@@ -51,7 +48,6 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) 
 
       const metadataResults = await Promise.all(metadataPromises);
 
-      // Update state with fetched metadata
       const metadataMap: { [key: number]: { fileUrl?: string } | null } = {};
       metadataResults.forEach(({ songId, metadata }) => {
         metadataMap[songId] = metadata;
@@ -65,6 +61,14 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) 
     }
   }, [songs]);
 
+  // Effect to scroll to the song when scrollToSongId changes
+  useEffect(() => {
+    if (scrollToSongId && songRefs.current[scrollToSongId]) {
+      songRefs.current[scrollToSongId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      onPlay(scrollToSongId); // Automatically play the song when scrolled to
+    }
+  }, [scrollToSongId, onPlay]);
+
   return (
     <div className="w-full flex flex-col items-start">
       {songs.length > 0 ? (
@@ -72,14 +76,17 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId }) 
           const metadata = songMetadata[songId];
 
           return (
-            <div key={songId}>
+            <div
+              key={songId}
+              ref={el => (songRefs.current[songId] = el)} // Assign each song to a ref
+            >
               {metadata?.fileUrl ? (
                 <Song
                   songCID={metadata.fileUrl}
                   metadataCID={JSON.stringify(metadata)}
                   songId={songId}
                   onPlay={onPlay}
-                  songIsPlaying={currentPlayingId === songId} // Determine if the current song is playing
+                  songIsPlaying={currentPlayingId === songId}
                 />
               ) : (
                 <p>Loading song {songId}...</p>

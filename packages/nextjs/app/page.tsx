@@ -5,8 +5,7 @@ import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
-import PatronizeArtist from "~~/components/scaffold-eth/PatronizeArtist";
-import SoundContribution from "~~/components/scaffold-eth/SoundContribution";
+import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
@@ -16,15 +15,6 @@ const Home: NextPage = () => {
   const { writeContractAsync: writeSoundScaffoldAsync } = useScaffoldWriteContract("SoundScaffold");
 
   const [artistName, setArtistName] = useState<string>("");
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   const { data: isRegistered, error: isRegisteredError } = useScaffoldReadContract({
     contractName: "SoundScaffold",
@@ -43,12 +33,11 @@ const Home: NextPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (isRegistered && isFetched) {
-        // Wait for the async function to resolve
-        setArtistName(userArtistName || ""); // Ensure you pass a string, even if the value is undefined
+        setArtistName(userArtistName || "");
       }
     };
     globalSetIsRegistered(true);
-    fetchData(); // Call the async function
+    fetchData();
   }, [isRegistered, isFetched]);
 
   const handleRegister = async () => {
@@ -69,28 +58,40 @@ const Home: NextPage = () => {
     });
   };
 
+  const handleOwner = async () => {
+    await writeSoundScaffoldAsync({
+      functionName: "withdraw",
+    });
+  };
+
   if (!isRegisteredError) {
     return (
       <>
-        <div>
-          <h2>
-            Welcome to SoundScaffold! This is the just the beginning. I want to bring music to web3 in a much more
-            meaningful way.
+        <div className="pt-6 bg-gray-900 text-white flex items-center justify-center">
+          <h2 className="text-xl">
+            This is the just the beginning. We want to bring<span className="text-4xl"> music</span> to web3 in a much
+            more meaningful way.
           </h2>
         </div>
+
         {isRegistered ? (
           <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
             <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
               <h2 className="text-3xl font-semibold mb-6 text-center">Welcome {artistName}</h2>
-              <div className="mx-auto p-6">
+              <div className="flex items-center justify-center">
+                <Avatar address={connectedAddress} size="10xl" />
+              </div>
+              <div className="mx-auto p-6 flex items-center justify-center">
                 <Address address={connectedAddress} />
               </div>
-              <Link
-                className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors"
-                href="/upload"
-              >
-                Upload Music
-              </Link>
+              <div className="flex items-center justify-center text-center">
+                <Link
+                  className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors"
+                  href="/upload"
+                >
+                  Upload Music
+                </Link>
+              </div>
             </div>
           </div>
         ) : (
@@ -115,6 +116,13 @@ const Home: NextPage = () => {
             </div>
           </div>
         )}
+        <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
+          <h3>
+            Sound Scaffold is free to use aside from gas fees. Feel free to contribute to your favorite tracks and the
+            project itself!
+          </h3>
+        </div>
+        {connectedAddress === process.env.NEXT_PUBLIC_OWNER && <button onClick={handleOwner}>Withdraw</button>}
       </>
     );
   } else {

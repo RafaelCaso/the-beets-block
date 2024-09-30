@@ -14,7 +14,6 @@ const deploySoundScaffold: DeployFunction = async function (hre: HardhatRuntimeE
 
   const ownerAddress = "0xd1B41bE30F980315b8A6b754754aAa299C7abea2";
 
-  // Get the deployed contract to interact with it after deploying.
   const soundScaffold = await hre.ethers.getContract<Contract>("SoundScaffold", deployer);
   const soundScaffoldAddress = await soundScaffold.getAddress();
   const transferOwnership = await soundScaffold.transferOwnership(ownerAddress);
@@ -24,6 +23,4 @@ const deploySoundScaffold: DeployFunction = async function (hre: HardhatRuntimeE
 
 export default deploySoundScaffold;
 
-// Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags YourContract
 deploySoundScaffold.tags = ["SoundScaffold"];

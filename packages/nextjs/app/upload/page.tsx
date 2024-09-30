@@ -151,61 +151,69 @@ const UploadMusic: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
-        <h2 className="text-3xl font-semibold mb-6 text-center">Upload Music</h2>
-
-        <input
-          type="text"
-          placeholder="Track Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
-        />
-
-        <input
-          type="text"
-          placeholder="Genre"
-          value={genre}
-          onChange={handleGenreChange}
-          className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
-        />
-        {genrePresets.length > 0 && (
-          <ul className="menu bg-primary-focus w-full rounded-md mt-1 max-h-40 overflow-auto">
-            {genrePresets.map(preset => (
-              <li
-                key={preset}
-                onClick={e => {
-                  e.stopPropagation();
-                  setGenre(preset);
-                  setGenrePresets([]);
-                }}
-              >
-                <a className="text-white hover:bg-primary">{preset}</a>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <input
-          type="file"
-          accept="audio/*"
-          onChange={handleFileChange}
-          ref={fileInputRef}
-          className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-100 hover:file:bg-gray-600 mb-4"
-        />
-
-        <button
-          onClick={handleUpload}
-          className={`w-full bg-orange-500 p-3 rounded-lg text-white transition-colors ${
-            checkingCopyright ? "cursor-not-allowed opacity-50 bg-gray-500" : "hover:bg-orange-600"
-          }`}
-          disabled={checkingCopyright}
-        >
-          {checkingCopyright ? "Uploading..." : "Upload"}
-        </button>
+    <>
+      <div className="pt-6 pb-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
+        <h3>
+          Our copyright check is currently very strict so we apologize if it incorrectly flags your song. Please reach
+          out to us at SoundScaffold@gmail.com and supply your track for human review.
+        </h3>
       </div>
-    </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Upload Music</h2>
+
+          <input
+            type="text"
+            placeholder="Track Name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+          />
+
+          <input
+            type="text"
+            placeholder="Genre"
+            value={genre}
+            onChange={handleGenreChange}
+            className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+          />
+          {genrePresets.length > 0 && (
+            <ul className="menu bg-primary-focus w-full rounded-md mt-1 max-h-40 overflow-auto">
+              {genrePresets.map(preset => (
+                <li
+                  key={preset}
+                  onClick={e => {
+                    e.stopPropagation();
+                    setGenre(preset);
+                    setGenrePresets([]);
+                  }}
+                >
+                  <a className="text-white hover:bg-primary">{preset}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={handleFileChange}
+            ref={fileInputRef}
+            className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-100 hover:file:bg-gray-600 mb-4"
+          />
+
+          <button
+            onClick={handleUpload}
+            className={`w-full bg-orange-500 p-3 rounded-lg text-white transition-colors ${
+              checkingCopyright ? "cursor-not-allowed opacity-50 bg-gray-500" : "hover:bg-orange-600"
+            }`}
+            disabled={checkingCopyright}
+          >
+            {checkingCopyright ? "Uploading..." : "Upload"}
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 
