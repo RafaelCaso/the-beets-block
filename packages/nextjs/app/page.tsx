@@ -72,6 +72,12 @@ const Home: NextPage = () => {
   if (!isRegisteredError) {
     return (
       <>
+        <div>
+          <h2>
+            Welcome to SoundScaffold! This is the just the beginning. I want to bring music to web3 in a much more
+            meaningful way.
+          </h2>
+        </div>
         {isRegistered ? (
           <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
             <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
@@ -109,15 +115,6 @@ const Home: NextPage = () => {
             </div>
           </div>
         )}
-        <div className="p-6">
-          <button
-            onClick={openModal}
-            className="w-full bg-orange-500 p-3 rounded-lg text-white transition-colors hover:bg-orange-600"
-          >
-            Contributions to Sound Scaffold are welcome and greatly appreciated!
-          </button>
-          {isModalOpen && <SoundContribution closeModal={closeModal} />}
-        </div>
       </>
     );
   } else {
