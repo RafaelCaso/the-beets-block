@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
+import Patrons from "~~/components/Patrons";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -121,6 +122,9 @@ const Home: NextPage = () => {
             Sound Scaffold is free to use aside from gas fees. Feel free to contribute to your favorite tracks and the
             project itself!
           </h3>
+        </div>
+        <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
+          <Patrons />
         </div>
         {connectedAddress === process.env.NEXT_PUBLIC_OWNER && <button onClick={handleOwner}>Withdraw</button>}
       </>
