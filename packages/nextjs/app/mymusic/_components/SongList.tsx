@@ -61,11 +61,10 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, sc
     }
   }, [songs]);
 
-  // Effect to scroll to the song when scrollToSongId changes
   useEffect(() => {
     if (scrollToSongId && songRefs.current[scrollToSongId]) {
       songRefs.current[scrollToSongId]?.scrollIntoView({ behavior: "smooth", block: "center" });
-      onPlay(scrollToSongId); // Automatically play the song when scrolled to
+      onPlay(scrollToSongId);
     }
   }, [scrollToSongId, onPlay]);
 
@@ -76,10 +75,7 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, sc
           const metadata = songMetadata[songId];
 
           return (
-            <div
-              key={songId}
-              ref={el => (songRefs.current[songId] = el)} // Assign each song to a ref
-            >
+            <div key={songId} ref={el => (songRefs.current[songId] = el)}>
               {metadata?.fileUrl ? (
                 <Song
                   songCID={metadata.fileUrl}

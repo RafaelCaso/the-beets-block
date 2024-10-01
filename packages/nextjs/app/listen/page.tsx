@@ -17,9 +17,9 @@ const Listen = () => {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPlayingId, setCurrentPlayingId] = useState<number | null>(null);
-  const [itemsToShow, setItemsToShow] = useState<number>(10); // Items initially shown
-  const loadMoreRef = useRef<HTMLDivElement | null>(null); // Ref to track when user reaches the bottom
-  const songRefs = useRef<{ [key: number]: HTMLDivElement | null }>({}); // Refs to track each song element
+  const [itemsToShow, setItemsToShow] = useState<number>(10);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const songRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const { data: uploadedSongEvents, isLoading: uploadedSongsIsLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",
@@ -76,12 +76,11 @@ const Listen = () => {
       setFilteredSongs(filtered);
       setSearchQuery("");
     }
-    setItemsToShow(10); // Reset items to show when searching
+    setItemsToShow(10);
   };
 
-  // Infinite scroll logic using IntersectionObserver
   const loadMore = useCallback(() => {
-    setItemsToShow(prevItems => prevItems + 10); // Load 10 more items
+    setItemsToShow(prevItems => prevItems + 10);
   }, []);
 
   useEffect(() => {
