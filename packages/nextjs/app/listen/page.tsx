@@ -126,7 +126,7 @@ const Listen = () => {
   };
 
   return (
-    <div className="p-4 bg-gray-900 min-h-screen relative pl-24">
+    <div className="p-4 bg-gray-900 min-h-screen relative pl-28">
       {/* Right-side fixed container */}
       <div className="pt-20 fixed top-4 right-4 flex flex-col items-center space-y-4">
         {/* Search widget */}
@@ -149,7 +149,7 @@ const Listen = () => {
         {/* Random song button */}
         <button
           onClick={handleRandomSong}
-          className="h-10 w-40 bg-green-500 text-white rounded-full focus:outline-none hover:bg-green-600 transition"
+          className="fixed top-20 left-4 h-30 w-20 bg-green-500 rounded text-white focus:outline-none hover:bg-green-600 transition"
         >
           Play Random Song
         </button>
