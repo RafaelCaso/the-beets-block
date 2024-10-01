@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { create } from "ipfs-http-client";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -19,6 +19,8 @@ const UploadMusic: React.FC = () => {
   const [genre, setGenre] = useState<string>("");
   const [genrePresets, setGenrePresets] = useState<string[]>([]);
   const [checkingCopyright, setCheckingCopyright] = useState<boolean>(false);
+  const [canCheckCopyright, setCanCheckCopyright] = useState<boolean>(true);
+  const [lastFlaggedTime, setLastFlaggedTime] = useState<number | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,6 +29,25 @@ const UploadMusic: React.FC = () => {
     functionName: "artistNames",
     args: [connectedAddress],
   });
+
+  const CHECK_COOLDOWN_TIME = 60 * 1000; // 1 minute cooldown after a flagged song
+
+  // Effect to reset cooldown after the cooldown time has passed
+  useEffect(() => {
+    if (lastFlaggedTime) {
+      const remainingTime = Date.now() - lastFlaggedTime;
+      if (remainingTime >= CHECK_COOLDOWN_TIME) {
+        setCanCheckCopyright(true);
+        setLastFlaggedTime(null);
+      } else {
+        const timer = setTimeout(() => {
+          setCanCheckCopyright(true);
+          setLastFlaggedTime(null);
+        }, CHECK_COOLDOWN_TIME - remainingTime);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [lastFlaggedTime]);
 
   const checkCopyright = async (fileBuffer: ArrayBuffer) => {
     notification.info("Checking for copyright...");
@@ -88,18 +109,26 @@ const UploadMusic: React.FC = () => {
         /*
          ************* COPYRIGHT CHECK **************
          */
-        // const checkResult = await checkCopyright(buffer);
+        if (!canCheckCopyright) {
+          notification.error("You've recently uploaded a flagged track. Please wait before trying again.");
+          setCheckingCopyright(false);
+          return;
+        }
 
-        // if (checkResult.metadata && checkResult.metadata.music) {
-        //   const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
+        const checkResult = await checkCopyright(buffer);
 
-        //   if (highScore) {
-        //     notification.error("This file has been flagged as copyrighted.");
-        //     resetForm();
-        //     setCheckingCopyright(false);
-        //     return;
-        //   }
-        // }
+        if (checkResult.metadata && checkResult.metadata.music) {
+          const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
+
+          if (highScore) {
+            notification.error("This file has been flagged as copyrighted.");
+            resetForm();
+            setLastFlaggedTime(Date.now()); // Set the flagged time
+            setCanCheckCopyright(false); // Start cooldown
+            setCheckingCopyright(false);
+            return;
+          }
+        }
 
         const result = await ipfs.add(buffer);
         const fileIpfsUrl = `http://localhost:8080/ipfs/${result.path}`;
