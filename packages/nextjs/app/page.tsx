@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import Patrons from "~~/components/Patrons";
+import ProjectPatrons from "~~/components/ProjectPatrons";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import thumbnail from "~~/public/thumbnail.jpg";
 import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -70,13 +73,23 @@ const Home: NextPage = () => {
       <>
         <div className="pt-6 bg-gray-900 text-white flex items-center justify-center">
           <h2 className="text-xl">
-            This is the just the beginning. We want to bring<span className="text-4xl"> music</span> to web3 in a much
-            more meaningful way.
+            This is just the beginning. We want to bring <span className="text-4xl">music</span> to web3 in a much more
+            meaningful way.
           </h2>
         </div>
-
+        <div className="pt-4 pb-0 bg-gray-900 flex justify-center">
+          {" "}
+          {/* Changed pt-10 to pt-4 */}
+          <Image
+            src={thumbnail}
+            alt="Powered by ScaffoldEth2!"
+            width={200}
+            height={200}
+            className="rounded-md" // Optional: Add some rounding to the corners
+          />
+        </div>
         {isRegistered ? (
-          <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+          <div className="p-20 flex items-center justify-center bg-gray-900 text-white">
             <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
               <h2 className="text-3xl font-semibold mb-6 text-center">Welcome {artistName}</h2>
               <div className="flex items-center justify-center">
@@ -96,7 +109,7 @@ const Home: NextPage = () => {
             </div>
           </div>
         ) : (
-          <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+          <div className="p-10 flex items-center justify-center bg-gray-900 text-white">
             <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
               <h2 className="text-3xl font-semibold mb-6 text-center">Register to upload music!</h2>
               <input
@@ -119,9 +132,12 @@ const Home: NextPage = () => {
         )}
         <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
           <h3>
-            Sound Scaffold is free to use aside from gas fees. Feel free to contribute to your favorite tracks and the
-            project itself!
+            Sound Scaffold is <b>free</b> to use aside from gas fees. Feel free to contribute to your favorite tracks
+            and the project itself!
           </h3>
+        </div>
+        <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
+          <ProjectPatrons />
         </div>
         <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
           <Patrons />

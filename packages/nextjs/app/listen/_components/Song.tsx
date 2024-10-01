@@ -145,7 +145,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
       <div className="flex-1">
         {/* Title */}
         <div className="flex items-center">
-          <p className="text-lg font-semibold">{metadata.title || "Unknown Track"}</p>
+          <p className="text-4xl font-semibold">{metadata.title || "Unknown Track"}</p>
         </div>
 
         {/* Genre and Upload Time */}

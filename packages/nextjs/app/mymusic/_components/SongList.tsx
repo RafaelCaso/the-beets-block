@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MutableRefObject } from "react";
-import abi from "../../../../hardhat/artifacts/contracts/SoundScaffold.sol/SoundScaffold.json";
 import Song from "../../listen/_components/Song";
 import { readContract } from "@wagmi/core";
+import abi from "~~/utils/SoundScaffold.json";
 import { config } from "~~/wagmiConfig";
 
 interface SongListProps {
@@ -13,7 +13,7 @@ interface SongListProps {
   songRefs?: MutableRefObject<{ [key: number]: HTMLDivElement | null }>;
 }
 
-const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
 const fetchTokenURI = async (songId: bigint) => {
   try {

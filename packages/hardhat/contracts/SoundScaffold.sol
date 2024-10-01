@@ -9,14 +9,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 
+  // events
   event SongUploaded(uint256 indexed songId, string artist, string genre, string title);
   event PatronizeMusician(address patron, address artist, uint256 value, uint256 indexed songId);
+  event PatronizeProject(address patron, uint256 value);
+  event OwnerWithdraw(address indexed owner, uint256 amount);
 
+  // state variables
   mapping(address => string) public artistNames;
   mapping(address => uint256[]) public artistSongs;
-
-  address[] public accounts;
-
   uint256 public nextTokenId = 0;
 
   constructor() ERC721("Sound Scaffold", "SONG") {}
@@ -24,7 +25,6 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
   function registerAccount(string calldata _artistName) external {
     require(bytes(artistNames[msg.sender]).length == 0, "Artist name already registered");
     artistNames[msg.sender] = _artistName;
-    // accounts.push(msg.sender);
   }
 
   function accountExists(address _user) public view returns(bool) {
@@ -35,6 +35,7 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
   }
 
   function contribute(address payable _artist, uint256 _songId) payable public {
+    require(msg.value > 0, "Contribution must be greater than 0");
     (bool sent, ) = _artist.call{value: msg.value}("");
     require(sent, "Failed to send Ether");
     emit PatronizeMusician(msg.sender, _artist, msg.value, _songId);
@@ -51,8 +52,9 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 		// return "ipfs://";
 	}
 
+  // upload song
   function mintItem(address to, string memory uri, string memory genre, string memory title) public payable returns (uint256) {
-      nextTokenId += 1;
+      nextTokenId++;
       uint256 tokenId = nextTokenId;
 
       _safeMint(to, tokenId);
@@ -69,6 +71,7 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 
         (bool sent, ) = owner().call{value: address(this).balance}("");
         require(sent, "Failed to withdraw");
+        emit OwnerWithdraw(owner(), balance);
     }
 
   // required overrides
@@ -104,5 +107,7 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 		return super.supportsInterface(interfaceId);
 	}
 
-  receive() payable external {}
+  receive() payable external {
+    emit PatronizeProject(msg.sender, msg.value);
+  }
 }

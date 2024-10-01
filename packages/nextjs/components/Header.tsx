@@ -26,11 +26,6 @@ const menuLinks: HeaderMenuLink[] = [
     icon: <HomeIcon className="h-4 w-4" />,
   },
   {
-    label: "Debug Contracts",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
-  {
     label: "Listen",
     href: "/listen",
     icon: <MusicalNoteIcon className="h-4 w-4" />,

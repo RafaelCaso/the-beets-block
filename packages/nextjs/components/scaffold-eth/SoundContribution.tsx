@@ -9,16 +9,17 @@ import { notification } from "~~/utils/scaffold-eth";
 const SoundContributionFooter: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contributionAmount, setContributionAmount] = useState("");
-  const { data: connectedAddress } = useWalletClient();
+  const { data: walletClient } = useWalletClient();
 
+  const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
   const handleContributeBtn = async () => {
     const tx = {
-      to: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      to: contractAddress,
       value: parseEther(contributionAmount),
     };
 
     try {
-      await connectedAddress?.sendTransaction(tx);
+      await walletClient?.sendTransaction(tx);
       notification.success("Thank you for contributing!");
       closeModal();
     } catch (error) {
