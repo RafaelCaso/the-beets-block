@@ -28,7 +28,6 @@ interface ACRCloudResponse {
   };
 }
 
-// Your ACRCloud credentials
 const defaultOptions: ACRCloudOptions = {
   host: "identify-us-west-2.acrcloud.com",
   endpoint: "/v1/identify",
@@ -39,7 +38,6 @@ const defaultOptions: ACRCloudOptions = {
   access_secret: ACR_SECRET,
 };
 
-// Utility function to build the string that needs to be signed
 function buildStringToSign(
   method: string,
   uri: string,
@@ -51,19 +49,14 @@ function buildStringToSign(
   return [method, uri, accessKey, dataType, signatureVersion, timestamp].join("\n");
 }
 
-// Utility function to sign the string using HMAC
 function sign(signString: string, accessSecret: string): string {
   return crypto.createHmac("sha1", accessSecret).update(Buffer.from(signString, "utf-8")).digest().toString("base64");
 }
 
-// API handler
 export async function POST(req: NextRequest) {
   try {
-    // Read and convert ArrayBuffer to Buffer
     const buffer = Buffer.from(await req.arrayBuffer());
-    const timestamp = Math.floor(Date.now() / 1000); // Unix timestamp in seconds
-
-    // Build the string to sign and then sign it
+    const timestamp = Math.floor(Date.now() / 1000);
     const stringToSign = buildStringToSign(
       "POST",
       defaultOptions.endpoint,
@@ -74,7 +67,6 @@ export async function POST(req: NextRequest) {
     );
     const signature = sign(stringToSign, defaultOptions.access_secret);
 
-    // Prepare the form data to send to ACRCloud
     const form = new FormData();
     form.append("sample", buffer, { filename: "sample.mp3" });
     form.append("sample_bytes", buffer.length.toString());
@@ -84,10 +76,8 @@ export async function POST(req: NextRequest) {
     form.append("signature", signature);
     form.append("timestamp", timestamp.toString());
 
-    // Convert form data to a stream
     const formStream = form as unknown as NodeJS.ReadableStream;
 
-    // Send the request to ACRCloud
     const acrResponse = await fetch(`https://${defaultOptions.host}${defaultOptions.endpoint}`, {
       method: "POST",
       body: formStream,

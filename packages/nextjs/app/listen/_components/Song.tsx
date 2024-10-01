@@ -28,7 +28,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     artistAddress?: string;
   }>({});
   const [contributionCount, setContributionCount] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const howlerRef = useRef<Howl | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -40,7 +40,6 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     watch: true,
   });
 
-  // count how many contributions for song component
   useEffect(() => {
     if (songPatronized) {
       const songContributions = songPatronized.filter((event: any) => event.args.songId === BigInt(songId));
@@ -49,7 +48,6 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
     }
   }, [songPatronized, songId]);
 
-  // populate data and music
   useEffect(() => {
     const meta = JSON.parse(metadataCID);
     const humanReadableTime = new Date(meta.uploadTime * 1000).toDateString();

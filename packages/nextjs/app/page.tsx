@@ -80,13 +80,7 @@ const Home: NextPage = () => {
         <div className="pt-4 pb-0 bg-gray-900 flex justify-center">
           {" "}
           {/* Changed pt-10 to pt-4 */}
-          <Image
-            src={thumbnail}
-            alt="Powered by ScaffoldEth2!"
-            width={200}
-            height={200}
-            className="rounded-md" // Optional: Add some rounding to the corners
-          />
+          <Image src={thumbnail} alt="Powered by ScaffoldEth2!" width={200} height={200} className="rounded-md" />
         </div>
         {isRegistered ? (
           <div className="p-20 flex items-center justify-center bg-gray-900 text-white">

@@ -35,19 +35,16 @@ export const Avatar = ({ address, size = "base" }: AvatarProps) => {
   const [ensAvatar, setEnsAvatar] = useState<string | null>(null);
   const checkSumAddress = getAddress(address);
 
-  // Fetch ENS name associated with the address
   const { data: fetchedEnsName } = useEnsName({
     address: checkSumAddress,
-    chainId: 1, // Mainnet for ENS lookups
-  });
-
-  // Fetch ENS avatar using the ENS name
-  const { data: fetchedEnsAvatar } = useEnsAvatar({
-    name: fetchedEnsName || undefined, // Pass ENS name to get avatar
     chainId: 1,
   });
 
-  // Update the ENS name and avatar when fetched
+  const { data: fetchedEnsAvatar } = useEnsAvatar({
+    name: fetchedEnsName || undefined,
+    chainId: 1,
+  });
+
   useEffect(() => {
     setEnsName(fetchedEnsName ?? null);
   }, [fetchedEnsName]);
@@ -62,7 +59,6 @@ export const Avatar = ({ address, size = "base" }: AvatarProps) => {
 
   return (
     <div onClick={handleClick} className="flex rounded-full items-center hover:scale-105 cursor-pointer">
-      {/* Display ENS avatar if available, otherwise fallback to blockie */}
       {ensAvatar ? (
         <img
           src={ensAvatar}

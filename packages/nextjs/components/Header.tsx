@@ -34,10 +34,9 @@ const menuLinks: HeaderMenuLink[] = [
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
-  const [isRegistered, setIsRegistered] = useState<boolean | null>(null); // null for initial loading state
+  const [isRegistered, setIsRegistered] = useState<boolean | null>(null);
   const { address: connectedAddress } = useAccount();
 
-  // Fetch artistName using the contract to ensure registration
   const { data: artistName } = useScaffoldReadContract({
     contractName: "SoundScaffold",
     functionName: "artistNames",
@@ -45,7 +44,6 @@ export const HeaderMenuLinks = () => {
   });
 
   useEffect(() => {
-    // Update registration status based on artistName
     if (artistName) {
       setIsRegistered(true);
     } else {
@@ -55,7 +53,6 @@ export const HeaderMenuLinks = () => {
 
   const dynamicMenuLinks = [...menuLinks];
 
-  // Conditionally add links if the user is registered
   if (isRegistered) {
     dynamicMenuLinks.push({
       label: "Upload",

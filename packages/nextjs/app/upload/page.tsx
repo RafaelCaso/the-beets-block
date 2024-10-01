@@ -30,9 +30,8 @@ const UploadMusic: React.FC = () => {
     args: [connectedAddress],
   });
 
-  const CHECK_COOLDOWN_TIME = 60 * 1000; // 1 minute cooldown after a flagged song
+  const CHECK_COOLDOWN_TIME = 60 * 1000;
 
-  // Effect to reset cooldown after the cooldown time has passed
   useEffect(() => {
     if (lastFlaggedTime) {
       const remainingTime = Date.now() - lastFlaggedTime;
@@ -126,8 +125,8 @@ const UploadMusic: React.FC = () => {
           if (highScore) {
             notification.error("This file has been flagged as copyrighted.");
             resetForm();
-            setLastFlaggedTime(Date.now()); // Set the flagged time
-            setCanCheckCopyright(false); // Start cooldown
+            setLastFlaggedTime(Date.now());
+            setCanCheckCopyright(false);
             setCheckingCopyright(false);
             return;
           }

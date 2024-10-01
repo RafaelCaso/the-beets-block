@@ -37,7 +37,7 @@ const fetchTokenURI = async (songId: bigint) => {
 
 const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, scrollToSongId }) => {
   const [songMetadata, setSongMetadata] = useState<{ [key: number]: { fileUrl?: string } | null }>({});
-  const songRefs = useRef<{ [key: number]: HTMLDivElement | null }>({}); // Refs for each song div
+  const songRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     const fetchAllMetadata = async () => {
