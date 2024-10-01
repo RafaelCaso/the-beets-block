@@ -57,7 +57,6 @@
     "howler": "^2.2.4",
     "ipfs-http-client": "^60.0.1",
     "node-fetch": "^3.3.2",
-    "pinata-web3": "^0.5.0",
     "request": "^2.88.2"
   }
 }

@@ -90,6 +90,7 @@ const UploadMusic: React.FC = () => {
   };
 
   const handleUpload = async () => {
+    console.log("Handle Upload triggered");
     if (!connectedAddress) {
       notification.error("Please sign in before uploading");
       return;
@@ -100,6 +101,7 @@ const UploadMusic: React.FC = () => {
     }
 
     try {
+      console.log("inside try block");
       const reader = new FileReader();
 
       reader.onloadend = async () => {
@@ -118,6 +120,7 @@ const UploadMusic: React.FC = () => {
         const checkResult = await checkCopyright(buffer);
 
         if (checkResult.metadata && checkResult.metadata.music) {
+          console.log("inside copyright check");
           const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
 
           if (highScore) {
@@ -130,7 +133,9 @@ const UploadMusic: React.FC = () => {
           }
         }
 
+        console.log("cleared copyright check");
         const result = await ipfs.add(buffer);
+        console.log("ipfs.add(buffer) complete");
         const fileIpfsUrl = `http://localhost:8080/ipfs/${result.path}`;
         setFileUrl(fileIpfsUrl);
 
@@ -145,6 +150,7 @@ const UploadMusic: React.FC = () => {
           uploadTime: unixTimeStamp,
           artistAddress: connectedAddress,
         };
+        console.log(metadata);
 
         const metadataBuffer = Buffer.from(JSON.stringify(metadata));
         const metadataResult = await ipfs.add(metadataBuffer);
