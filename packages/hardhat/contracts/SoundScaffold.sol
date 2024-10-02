@@ -48,8 +48,8 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 
   function _baseURI() internal pure override returns (string memory) {
     // @dev delete localhost baseURI and uncomment ipfs uri for production
-    return "http://localhost:8080/ipfs/";
-		// return "ipfs://";
+    // return "http://localhost:8080/ipfs/";
+		return "https://ipfs.io/ipfs/";
 	}
 
   // upload song

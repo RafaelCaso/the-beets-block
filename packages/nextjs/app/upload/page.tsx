@@ -88,6 +88,14 @@ const UploadMusic: React.FC = () => {
     }
   };
 
+  const extractCID = (url: string): string => {
+    const match = url.match(/\/ipfs\/([^/]+)/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    throw new Error("Invalid IPFS URL");
+  };
+
   const handleUpload = async () => {
     console.log("Handle Upload triggered");
     if (!connectedAddress) {
@@ -133,9 +141,20 @@ const UploadMusic: React.FC = () => {
         }
 
         console.log("cleared copyright check");
-        const result = await ipfs.add(buffer);
+
+        const data = new FormData();
+        data.set("file", file);
+        const uploadRequest = await fetch("/api/files", {
+          method: "POST",
+          body: data,
+        });
+        const gatewayUrl = await uploadRequest.json();
+        // ******************
+        //*******************
+        const ipfsUrl = extractCID(gatewayUrl);
+        // const result = await ipfs.add(buffer);
         console.log("ipfs.add(buffer) complete");
-        const fileIpfsUrl = `http://localhost:8080/ipfs/${result.path}`;
+        const fileIpfsUrl = `https://ipfs.io/ipfs/${ipfsUrl}`;
         setFileUrl(fileIpfsUrl);
 
         const currentDateTime = new Date();
@@ -150,14 +169,24 @@ const UploadMusic: React.FC = () => {
           artistAddress: connectedAddress,
         };
         console.log(metadata);
-
-        const metadataBuffer = Buffer.from(JSON.stringify(metadata));
-        const metadataResult = await ipfs.add(metadataBuffer);
-        const metadataUrl = metadataResult.path;
+        const metadataJson = JSON.stringify(metadata);
+        const metadataFile = new Blob([metadataJson], { type: "application/json" });
+        const data2 = new FormData();
+        data2.set("file", metadataFile);
+        const uploadRequest2 = await fetch("/api/files", {
+          method: "POST",
+          body: data2,
+        });
+        const nftGatewayUrl = await uploadRequest2.json();
+        console.log(nftGatewayUrl);
+        const nftUrl = extractCID(nftGatewayUrl);
+        // const metadataBuffer = Buffer.from(JSON.stringify(metadata));
+        // const metadataResult = await ipfs.add(metadataBuffer);
+        // const metadataUrl = metadataResult.path;
 
         await writeSoundScaffoldAsync({
           functionName: "mintItem",
-          args: [connectedAddress, metadataUrl, metadata.genre, metadata.title],
+          args: [connectedAddress, nftUrl, metadata.genre, metadata.title],
         });
 
         notification.success("File uploaded!");
