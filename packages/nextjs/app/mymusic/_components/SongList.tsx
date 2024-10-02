@@ -75,7 +75,12 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, sc
           const metadata = songMetadata[songId];
 
           return (
-            <div key={songId} ref={el => (songRefs.current[songId] = el)}>
+            <div
+              key={songId}
+              ref={el => {
+                songRefs.current[songId] = el;
+              }}
+            >
               {metadata?.fileUrl ? (
                 <Song
                   songCID={metadata.fileUrl}

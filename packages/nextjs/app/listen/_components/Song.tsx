@@ -36,7 +36,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
   const { data: songPatronized, isLoading: songPatronizedLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",
     eventName: "PatronizeMusician",
-    fromBlock: 0n,
+    fromBlock: 126147189n,
     watch: true,
   });
 

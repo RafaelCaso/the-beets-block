@@ -16,7 +16,7 @@ const ProjectPatrons = () => {
   const { data: projectPatronEvents, isLoading: projectPatronsIsLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",
     eventName: "PatronizeProject",
-    fromBlock: 0n,
+    fromBlock: 126147189n,
     watch: true,
   });
 

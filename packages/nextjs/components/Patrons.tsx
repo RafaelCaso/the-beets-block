@@ -23,7 +23,7 @@ const Patrons = () => {
   const { data: patronEvents, isLoading: patronEventsLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",
     eventName: "PatronizeMusician",
-    fromBlock: 0n,
+    fromBlock: 126147189n,
     watch: true,
   });
 
@@ -46,7 +46,7 @@ const Patrons = () => {
   const { data: projectPatronEvents, isLoading: projectPatronsIsLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",
     eventName: "PatronizeProject",
-    fromBlock: 0n,
+    fromBlock: 126147189n,
     watch: true,
   });
 

@@ -24,7 +24,7 @@ const Listen = () => {
   const { data: uploadedSongEvents, isLoading: uploadedSongsIsLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",
     eventName: "SongUploaded",
-    fromBlock: 0n,
+    fromBlock: 126147189n,
     watch: true,
   });
 

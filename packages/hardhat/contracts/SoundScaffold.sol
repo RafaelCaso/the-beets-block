@@ -9,13 +9,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
 
-  // events
   event SongUploaded(uint256 indexed songId, string artist, string genre, string title);
   event PatronizeMusician(address patron, address artist, uint256 value, uint256 indexed songId);
   event PatronizeProject(address patron, uint256 value);
   event OwnerWithdraw(address indexed owner, uint256 amount);
 
-  // state variables
   mapping(address => string) public artistNames;
   mapping(address => uint256[]) public artistSongs;
   uint256 public nextTokenId = 0;
@@ -47,12 +45,9 @@ contract SoundScaffold is ERC721, ERC721URIStorage, Ownable {
   }
 
   function _baseURI() internal pure override returns (string memory) {
-    // @dev delete localhost baseURI and uncomment ipfs uri for production
-    // return "http://localhost:8080/ipfs/";
 		return "https://ipfs.io/ipfs/";
 	}
 
-  // upload song
   function mintItem(address to, string memory uri, string memory genre, string memory title) public payable returns (uint256) {
       nextTokenId++;
       uint256 tokenId = nextTokenId;
