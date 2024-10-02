@@ -25,10 +25,8 @@ const fetchTokenURI = async (songId: bigint) => {
     });
 
     if (songUrl) {
-      console.log("SongUrl:", songUrl);
       const response = await fetch(songUrl as string);
       const json = await response.json();
-      console.log(json);
       return json;
     }
   } catch (error) {
@@ -87,7 +85,7 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, sc
                   songIsPlaying={currentPlayingId === songId}
                 />
               ) : (
-                <p className="text-white">Loading song {songId}...</p>
+                <></>
               )}
             </div>
           );

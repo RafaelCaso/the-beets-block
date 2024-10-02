@@ -1,13 +1,10 @@
 "use client";
 
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { create } from "ipfs-http-client";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { musicGenres } from "~~/utils/musicGenres";
 import { notification } from "~~/utils/scaffold-eth";
-
-const ipfs = create({ host: "localhost", port: 5001, protocol: "http" });
 
 const UploadMusic: React.FC = () => {
   const { address: connectedAddress } = useAccount();
@@ -30,6 +27,7 @@ const UploadMusic: React.FC = () => {
     args: [connectedAddress],
   });
 
+  // time restriction after uploading copyrighted music
   const CHECK_COOLDOWN_TIME = 60 * 1000;
 
   useEffect(() => {
@@ -97,7 +95,6 @@ const UploadMusic: React.FC = () => {
   };
 
   const handleUpload = async () => {
-    console.log("Handle Upload triggered");
     if (!connectedAddress) {
       notification.error("Please sign in before uploading");
       return;
@@ -108,9 +105,9 @@ const UploadMusic: React.FC = () => {
     }
 
     try {
-      console.log("inside try block");
       const reader = new FileReader();
 
+      // Array Buffer required for copyright check
       reader.onloadend = async () => {
         setCheckingCopyright(true);
         const buffer = reader.result as ArrayBuffer;
@@ -127,7 +124,6 @@ const UploadMusic: React.FC = () => {
         const checkResult = await checkCopyright(buffer);
 
         if (checkResult.metadata && checkResult.metadata.music) {
-          console.log("inside copyright check");
           const highScore = checkResult.metadata.music.some((musicItem: any) => musicItem.score >= 90);
 
           if (highScore) {
@@ -140,20 +136,19 @@ const UploadMusic: React.FC = () => {
           }
         }
 
-        console.log("cleared copyright check");
-
+        // upload music and pin with pinata
         const data = new FormData();
         data.set("file", file);
         const uploadRequest = await fetch("/api/files", {
           method: "POST",
           body: data,
         });
+
+        // retrieve CID from pinata and remove gateway_url
         const gatewayUrl = await uploadRequest.json();
-        // ******************
-        //*******************
+
         const ipfsUrl = extractCID(gatewayUrl);
-        // const result = await ipfs.add(buffer);
-        console.log("ipfs.add(buffer) complete");
+
         const fileIpfsUrl = `https://ipfs.io/ipfs/${ipfsUrl}`;
         setFileUrl(fileIpfsUrl);
 
@@ -168,7 +163,8 @@ const UploadMusic: React.FC = () => {
           uploadTime: unixTimeStamp,
           artistAddress: connectedAddress,
         };
-        console.log(metadata);
+
+        // create metadata and pin it with pinata as blob
         const metadataJson = JSON.stringify(metadata);
         const metadataFile = new Blob([metadataJson], { type: "application/json" });
         const data2 = new FormData();
@@ -177,13 +173,12 @@ const UploadMusic: React.FC = () => {
           method: "POST",
           body: data2,
         });
+        // retrieve CID for metadata and remove gateway url again
         const nftGatewayUrl = await uploadRequest2.json();
-        console.log(nftGatewayUrl);
-        const nftUrl = extractCID(nftGatewayUrl);
-        // const metadataBuffer = Buffer.from(JSON.stringify(metadata));
-        // const metadataResult = await ipfs.add(metadataBuffer);
-        // const metadataUrl = metadataResult.path;
 
+        const nftUrl = extractCID(nftGatewayUrl);
+
+        // finally, use the CID to mint NFT
         await writeSoundScaffoldAsync({
           functionName: "mintItem",
           args: [connectedAddress, nftUrl, metadata.genre, metadata.title],
@@ -218,7 +213,7 @@ const UploadMusic: React.FC = () => {
       <div className="pt-6 pb-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
         <h3>
           Our copyright check is currently very strict so we apologize if it incorrectly flags your song. Please reach
-          out to us at SoundScaffold@gmail.com and supply your track for human review.
+          out to us at soundscaffoldeth@gmail.com and supply your track for human review.
         </h3>
       </div>
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
