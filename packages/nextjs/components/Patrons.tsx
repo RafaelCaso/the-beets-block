@@ -18,7 +18,7 @@ interface ProjectPatronage {
 
 const Patrons = () => {
   const [patrons, setPatrons] = useState<Patronage[]>([]);
-  const [projectPatrons, setProjectPatrons] = useState<ProjectPatronage[]>([]);
+  const [, setProjectPatrons] = useState<ProjectPatronage[]>([]);
 
   const { data: patronEvents, isLoading: patronEventsLoading } = useScaffoldEventHistory({
     contractName: "SoundScaffold",

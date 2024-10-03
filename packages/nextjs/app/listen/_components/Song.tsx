@@ -43,7 +43,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
 
       setContributionCount(songContributions.length);
     }
-  }, [songPatronized, songId]);
+  }, [songPatronized, songId, songPatronizedLoading]);
 
   useEffect(() => {
     const meta = JSON.parse(metadataCID);
