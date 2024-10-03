@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import FormData from "form-data";
-import fetch from "node-fetch";
 
 const ACR_SECRET: string = process.env.NEXT_PUBLIC_ACR_SECRET || "";
 
@@ -67,8 +65,9 @@ export async function POST(req: NextRequest) {
     );
     const signature = sign(stringToSign, defaultOptions.access_secret);
 
+    // Use native FormData API in Node.js 18+
     const form = new FormData();
-    form.append("sample", buffer, { filename: "sample.mp3" });
+    form.append("sample", new Blob([buffer]), "sample.mp3");
     form.append("sample_bytes", buffer.length.toString());
     form.append("access_key", defaultOptions.access_key);
     form.append("data_type", defaultOptions.data_type);
@@ -76,11 +75,10 @@ export async function POST(req: NextRequest) {
     form.append("signature", signature);
     form.append("timestamp", timestamp.toString());
 
-    const formStream = form as unknown as NodeJS.ReadableStream;
-
+    // Native fetch in Node.js 18+
     const acrResponse = await fetch(`https://${defaultOptions.host}${defaultOptions.endpoint}`, {
       method: "POST",
-      body: formStream,
+      body: form,
     });
 
     const acrResponseText = await acrResponse.text();
