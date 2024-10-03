@@ -2148,6 +2148,7 @@ __metadata:
     "@rainbow-me/rainbowkit": 2.1.5
     "@tanstack/react-query": ^5.28.6
     "@trivago/prettier-plugin-sort-imports": ^4.1.1
+    "@types/howler": ^2.2.12
     "@types/node": ^17.0.35
     "@types/nprogress": ^0
     "@types/react": ^18.0.9
@@ -2756,7 +2757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/howler@npm:^2":
+"@types/howler@npm:^2.2.12":
   version: 2.2.12
   resolution: "@types/howler@npm:2.2.12"
   checksum: 0f8b88abd9b0607db50c4fbc91cc6646a9eee4a337f3e8b9c39696e78eff1eb0b3f5913bf32cccc7a96d2be2af8544376ce3afa5de4b1ba9873d0287abe97a5b
@@ -12477,7 +12478,7 @@ __metadata:
     "@openzeppelin/contracts": ^5.0.2
     "@types/body-parser": ^1
     "@types/cors": ^2
-    "@types/howler": ^2
+    "@types/howler": ^2.2.12
     "@types/request": ^2
     acrcloud: ^1.4.0
     body-parser: ^1.20.3

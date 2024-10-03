@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/body-parser": "^1",
     "@types/cors": "^2",
-    "@types/howler": "^2",
+    "@types/howler": "^2.2.12",
     "@types/request": "^2",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
