@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAddress } from "viem";
 import { useEnsAvatar, useEnsName } from "wagmi";
@@ -26,14 +27,12 @@ const blockieSizeMap = {
   "10xl": 40,
 };
 export const Avatar = ({ address, size = "base" }: AvatarProps) => {
-  if (!address) {
-    return <div className="w-12 h-12 bg-gray-700 rounded-lg" />;
-  }
   const router = useRouter();
+  const avatarImage = address || "0x000000000000000000000000000000000000dead";
 
-  const [ensName, setEnsName] = useState<string | null>(null);
+  const [, setEnsName] = useState<string | null>(null);
   const [ensAvatar, setEnsAvatar] = useState<string | null>(null);
-  const checkSumAddress = getAddress(address);
+  const checkSumAddress = getAddress(avatarImage);
 
   const { data: fetchedEnsName } = useEnsName({
     address: checkSumAddress,
@@ -60,7 +59,7 @@ export const Avatar = ({ address, size = "base" }: AvatarProps) => {
   return (
     <div onClick={handleClick} className="flex rounded-full items-center hover:scale-105 cursor-pointer">
       {ensAvatar ? (
-        <img
+        <Image
           src={ensAvatar}
           alt="ENS Avatar"
           className="rounded-full w-12 h-12"

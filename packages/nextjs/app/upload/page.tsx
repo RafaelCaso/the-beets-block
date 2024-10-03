@@ -11,7 +11,7 @@ const UploadMusic: React.FC = () => {
   const { writeContractAsync: writeSoundScaffoldAsync } = useScaffoldWriteContract("SoundScaffold");
 
   const [file, setFile] = useState<File | null>(null);
-  const [fileUrl, setFileUrl] = useState<string>("");
+  const [, setFileUrl] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
   const [genrePresets, setGenrePresets] = useState<string[]>([]);

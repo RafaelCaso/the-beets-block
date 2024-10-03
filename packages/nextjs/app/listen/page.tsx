@@ -12,7 +12,7 @@ interface Song {
 }
 
 const Listen = () => {
-  const [songs, setSongs] = useState<Set<number>>(new Set());
+  const [, setSongs] = useState<Set<number>>(new Set());
   const [songDetails, setSongDetails] = useState<Song[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");

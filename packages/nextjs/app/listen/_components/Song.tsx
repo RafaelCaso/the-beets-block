@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Howl } from "howler";
-import { parseEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import PatronizeArtist from "~~/components/scaffold-eth/PatronizeArtist";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
 
 interface SongProps {
   songCID: string;
