@@ -225,7 +225,7 @@ const UploadMusic: React.FC = () => {
             placeholder="Track Name"
             value={name}
             onChange={e => setName(e.target.value)}
-            className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full p-3 mb-4 text-primary-content border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
           />
 
           <input
@@ -233,7 +233,7 @@ const UploadMusic: React.FC = () => {
             placeholder="Genre"
             value={genre}
             onChange={handleGenreChange}
-            className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full p-3 mb-4 text-primary-content border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
           />
           {genrePresets.length > 0 && (
             <ul className="menu bg-primary-focus w-full rounded-md mt-1 max-h-40 overflow-auto">

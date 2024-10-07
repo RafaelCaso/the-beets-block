@@ -111,7 +111,7 @@ const Home: NextPage = () => {
                 placeholder="Artist Name"
                 value={artistName}
                 onChange={e => setArtistName(e.target.value)}
-                className="w-full p-3 mb-4 text-black border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                className="w-full p-3 mb-4 text-primary-content border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
               />
               <div className="flex items-center justify-center">
                 <button

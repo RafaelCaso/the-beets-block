@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAddress } from "viem";
 import { useEnsAvatar, useEnsName } from "wagmi";
@@ -59,7 +58,7 @@ export const Avatar = ({ address, size = "base" }: AvatarProps) => {
   return (
     <div onClick={handleClick} className="flex rounded-full items-center hover:scale-105 cursor-pointer">
       {ensAvatar ? (
-        <Image
+        <img
           src={ensAvatar}
           alt="ENS Avatar"
           className="rounded-full w-12 h-12"

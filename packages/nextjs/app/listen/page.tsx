@@ -135,7 +135,7 @@ const Listen = () => {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search..."
-            className="p-2 pl-4 w-64 text-black rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 pl-4 w-58 text-primary-content rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={handleSearchClick}
