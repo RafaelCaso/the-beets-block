@@ -77,9 +77,16 @@ const Home: NextPage = () => {
             meaningful way.
           </h2>
         </div>
+        <div className="pt-6 bg-gray-900 text-white flex items-center justify-center">
+          <h2 className="text-xl">
+            <Link className="text-white text-decoration-line: underline" href="/listen">
+              Listen to music here{" "}
+            </Link>
+            or register below to upload your own original music!
+          </h2>
+        </div>
         <div className="pt-4 pb-0 bg-gray-900 flex justify-center">
           {" "}
-          {/* Changed pt-10 to pt-4 */}
           <Image src={thumbnail} alt="Powered by ScaffoldEth2!" width={200} height={200} className="rounded-md" />
         </div>
         {isRegistered ? (
