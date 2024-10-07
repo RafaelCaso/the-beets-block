@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { EtherInput } from ".";
 import { parseEther } from "viem";
+import { useAccount } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -16,7 +17,14 @@ const PatronizeArtist: React.FC<PatronizeArtistProps> = ({ title, artistAddress,
 
   const { writeContractAsync: writeSoundScaffoldAsync } = useScaffoldWriteContract("SoundScaffold");
 
+  const { address: connectedAddress } = useAccount();
+
   const handleContributeBtn = async () => {
+    if (!connectedAddress) {
+      notification.error("Please connect your wallet to contribute");
+      closeModal();
+      return;
+    }
     await writeSoundScaffoldAsync({
       functionName: "contribute",
       args: [artistAddress, BigInt(songId)],

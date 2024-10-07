@@ -13,6 +13,11 @@ const SoundContributionFooter: React.FC = () => {
 
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
   const handleContributeBtn = async () => {
+    if (!walletClient) {
+      notification.error("Please connect your wallet to contribute");
+      closeModal();
+      return;
+    }
     const tx = {
       to: contractAddress,
       value: parseEther(contributionAmount),
