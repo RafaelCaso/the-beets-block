@@ -55,7 +55,7 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
       src: [songCID],
       loop: false,
       volume: 1.0,
-      format: ["mp3", "ogg"],
+      format: ["mp3", "ogg", "mpeg", "m4a", "wav", "aac"],
       onload: () => {
         setDuration(howlerRef.current?.duration() || 0);
       },
