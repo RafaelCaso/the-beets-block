@@ -82,13 +82,15 @@ const Home: NextPage = () => {
         </div>
 
         <div className="py-8 flex justify-center bg-gray-900">
-          <Image
-            src={thumbnail}
-            alt="ScaffoldEth2"
-            width={200}
-            height={200}
-            className="rounded-lg shadow-lg hover:scale-105 transition-transform"
-          />
+          <Link href="https://scaffoldeth.io" target="_blank" rel="noopener noreferrer">
+            <Image
+              src={thumbnail}
+              alt="ScaffoldEth2"
+              width={200}
+              height={200}
+              className="rounded-lg shadow-lg hover:scale-105 transition-transform"
+            />
+          </Link>
         </div>
 
         {isRegistered ? (
