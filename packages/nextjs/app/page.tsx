@@ -71,76 +71,77 @@ const Home: NextPage = () => {
   if (!isRegisteredError) {
     return (
       <>
-        <div className="pt-6 bg-gray-900 text-white flex items-center justify-center">
-          <h2 className="text-xl">
-            This is just the beginning. We want to bring <span className="text-4xl">music</span> to web3 in a much more
+        <div className="pt-10 bg-gray-900 text-white flex flex-col items-center justify-center space-y-6">
+          <h2 className="text-2xl font-bold text-center">
+            This is just the beginning. We want to bring <span className="text-5xl">music</span> to web3 in a much more
             meaningful way.
           </h2>
+          <Link href="/listen" className="text-lg underline hover:text-orange-500 transition-colors">
+            Listen to music here or register below to upload your own original music!
+          </Link>
         </div>
-        <div className="pt-6 bg-gray-900 text-white flex items-center justify-center">
-          <h2 className="text-xl">
-            <Link className="text-white text-decoration-line: underline" href="/listen">
-              Listen to music here{" "}
-            </Link>
-            or register below to upload your own original music!
-          </h2>
+
+        <div className="py-8 flex justify-center bg-gray-900">
+          <Image
+            src={thumbnail}
+            alt="ScaffoldEth2"
+            width={200}
+            height={200}
+            className="rounded-lg shadow-lg hover:scale-105 transition-transform"
+          />
         </div>
-        <div className="pt-4 pb-0 bg-gray-900 flex justify-center">
-          {" "}
-          <Image src={thumbnail} alt="Powered by ScaffoldEth2!" width={200} height={200} className="rounded-md" />
-        </div>
+
         {isRegistered ? (
-          <div className="p-20 flex items-center justify-center bg-gray-900 text-white">
-            <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
-              <h2 className="text-3xl font-semibold mb-6 text-center">Welcome {artistName}</h2>
-              <div className="flex items-center justify-center">
+          <div className="p-10 flex items-center justify-center bg-gray-900 text-white">
+            <div className="max-w-md mx-auto p-8 bg-gray-800 shadow-lg rounded-lg space-y-6">
+              <h2 className="text-3xl font-semibold text-center">Welcome, {artistName}</h2>
+              <div className="flex justify-center">
                 <Avatar address={connectedAddress} size="10xl" />
               </div>
-              <div className="mx-auto p-6 flex items-center justify-center">
+              <div className="flex justify-center">
                 <Address address={connectedAddress} />
               </div>
-              <div className="flex items-center justify-center text-center">
-                <Link
-                  className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors"
-                  href="/upload"
-                >
-                  Upload Music
-                </Link>
-              </div>
+              <Link
+                href="/upload"
+                className="block bg-orange-500 text-center p-4 rounded-lg text-white hover:bg-orange-600 transition-colors"
+              >
+                Upload Music
+              </Link>
             </div>
           </div>
         ) : (
           <div className="p-10 flex items-center justify-center bg-gray-900 text-white">
-            <div className="max-w-2xl mx-auto p-8 bg-gray-800 shadow-md rounded-lg">
-              <h2 className="text-3xl font-semibold mb-6 text-center">Register to upload music!</h2>
+            <div className="max-w-md mx-auto p-8 bg-gray-800 shadow-lg rounded-lg space-y-4">
+              <h2 className="text-3xl font-semibold text-center">Register to upload music!</h2>
               <input
                 type="text"
                 placeholder="Artist Name"
                 value={artistName}
                 onChange={e => setArtistName(e.target.value)}
-                className="w-full p-3 mb-4 text-primary-content border border-gray-400 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                className="w-full p-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
-              <div className="flex items-center justify-center">
-                <button
-                  className="w-full bg-orange-500 p-3 rounded-lg text-white hover:bg-orange-600 transition-colors justify-center"
-                  onClick={handleRegister}
-                >
-                  Register
-                </button>
-              </div>
+              <button
+                onClick={handleRegister}
+                className="w-full bg-orange-500 p-4 rounded-lg text-white hover:bg-orange-600 transition-colors"
+              >
+                Register
+              </button>
             </div>
           </div>
         )}
-        <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
-          <h3>
+
+        <div className="py-6 bg-gray-900 text-white text-center">
+          <h3 className="text-lg">
             Sound Scaffold is <b>free</b> to use aside from gas fees. Feel free to contribute to your favorite tracks
             and the project itself!
           </h3>
         </div>
-        <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
+
+        <div className="py-4 bg-gray-900 text-white text-center">
           <ProjectPatrons />
         </div>
-        <div className="p-0 min-h-10 bg-gray-900 text-white flex items-center justify-center text-center">
+
+        <div className="py-4 bg-gray-900 text-white text-center">
           <Patrons />
         </div>
         {connectedAddress === process.env.NEXT_PUBLIC_OWNER && <button onClick={handleOwner}>Withdraw</button>}
