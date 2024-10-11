@@ -5,6 +5,8 @@ import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import PatronizeArtist from "~~/components/scaffold-eth/PatronizeArtist";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
+Howler.autoUnlock = true;
+
 interface SongProps {
   songCID: string;
   metadataCID: string;
