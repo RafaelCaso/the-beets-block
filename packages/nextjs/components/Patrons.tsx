@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Address } from "./scaffold-eth";
 import { formatEther } from "viem";
-import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 interface Patronage {
   patron: string;
@@ -20,51 +19,90 @@ const Patrons = () => {
   const [patrons, setPatrons] = useState<Patronage[]>([]);
   const [, setProjectPatrons] = useState<ProjectPatronage[]>([]);
 
-  const { data: patronEvents, isLoading: patronEventsLoading } = useScaffoldEventHistory({
-    contractName: "SoundScaffold",
-    eventName: "PatronizeMusician",
-    fromBlock: 126147189n,
-    watch: true,
-  });
+  useEffect(() => {
+    const fetchPatronizeMusicians = async () => {
+      try {
+        const response = await fetch(
+          "https://subgraph.satsuma-prod.com/4f495f562fa5/encode-club--740441/sound-scaffold-subgraph/api",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+              query {
+                patronizeMusicians {
+                  id
+                  songId
+                  patron
+                  artist
+                  value
+                }
+              }
+            `,
+            }),
+          },
+        );
+
+        const { data } = await response.json();
+
+        if (data?.patronizeMusicians) {
+          const patronsArray: Patronage[] = data.patronizeMusicians.map((patronage: any) => ({
+            patron: patronage.patron,
+            artist: patronage.artist,
+            value: Number(formatEther(patronage.value)),
+          }));
+          setPatrons(patronsArray);
+        }
+      } catch (error) {
+        console.error("Error fetching patronizeMusicians:", error);
+      }
+    };
+
+    fetchPatronizeMusicians();
+  }, []);
 
   useEffect(() => {
-    if (!patronEventsLoading) {
-      const patronsArray: Patronage[] = [];
-      patronEvents?.forEach(e => {
-        if (e.args.patron && e.args.artist && e.args.value) {
-          patronsArray.push({
-            patron: e.args.patron,
-            artist: e.args.artist,
-            value: Number(formatEther(e.args.value)),
-          });
+    const fetchProjectPatronize = async () => {
+      try {
+        const response = await fetch(
+          "https://subgraph.satsuma-prod.com/4f495f562fa5/encode-club--740441/sound-scaffold-subgraph/api",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+              query {
+                patronizeProjects {
+                  id
+                  patron
+                  value
+                }
+              }
+            `,
+            }),
+          },
+        );
+
+        const { data } = await response.json();
+
+        if (data?.patronizeProjects) {
+          const projectPatronsArray: ProjectPatronage[] = data.patronizeProjects.map((patronage: any) => ({
+            patron: patronage.patron,
+            value: Number(formatEther(patronage.value)),
+          }));
+          setProjectPatrons(projectPatronsArray);
         }
-      });
-      setPatrons(patronsArray);
-    }
-  }, [patronEvents, patronEventsLoading]);
+      } catch (error) {
+        console.error("Error fetching patronizeProjects:", error);
+      }
+    };
 
-  const { data: projectPatronEvents, isLoading: projectPatronsIsLoading } = useScaffoldEventHistory({
-    contractName: "SoundScaffold",
-    eventName: "PatronizeProject",
-    fromBlock: 126147189n,
-    watch: true,
-  });
-
-  useEffect(() => {
-    if (!projectPatronsIsLoading) {
-      const projectPatronsArray: ProjectPatronage[] = [];
-      projectPatronEvents?.forEach(e => {
-        if (e.args.patron && e.args.value) {
-          projectPatronsArray.push({
-            patron: e.args.patron,
-            value: Number(formatEther(e.args.value)),
-          });
-        }
-      });
-
-      setProjectPatrons(projectPatronsArray);
-    }
-  }, [projectPatronEvents, projectPatronsIsLoading]);
+    fetchProjectPatronize();
+  }, []);
 
   return (
     <>
