@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import SongList from "../mymusic/_components/SongList";
-import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 interface Song {
   songId: number;
@@ -21,38 +20,64 @@ const Listen = () => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const songRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
-  const { data: uploadedSongEvents, isLoading: uploadedSongsIsLoading } = useScaffoldEventHistory({
-    contractName: "SoundScaffold",
-    eventName: "SongUploaded",
-    fromBlock: 126147189n,
-    watch: true,
-  });
+  const fetchSongsFromSubgraph = async () => {
+    const response = await fetch(
+      "https://subgraph.satsuma-prod.com/4f495f562fa5/encode-club--740441/sound-scaffold-subgraph/api",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `query {
+          songUploadeds(first: 100, skip: 0) {
+            id
+            songId
+            artist
+            genre
+            title
+          }
+        }`,
+        }),
+      },
+    );
+
+    const { data } = await response.json();
+    return data.songUploadeds;
+  };
 
   useEffect(() => {
-    if (uploadedSongEvents && !uploadedSongsIsLoading) {
-      const songIdSet = new Set<number>();
-      const songDetailsArray: Song[] = [];
+    const getSongs = async () => {
+      try {
+        const songs = await fetchSongsFromSubgraph();
 
-      uploadedSongEvents.forEach(e => {
-        if (e.args.songId) {
-          const songId = Number(e.args.songId);
+        const songIdSet = new Set<number>();
+        const songDetailsArray: Song[] = [];
+
+        songs.forEach((song: any) => {
+          const songId = Number(song.songId);
           songIdSet.add(songId);
 
-          if (e.args.artist && e.args.title && e.args.genre)
-            songDetailsArray.push({
-              songId,
-              artist: e.args.artist,
-              title: e.args.title,
-              genre: e.args.genre,
-            });
-        }
-      });
+          songDetailsArray.push({
+            songId,
+            artist: song.artist,
+            title: song.title,
+            genre: song.genre,
+          });
+        });
 
-      setSongs(songIdSet);
-      setSongDetails(songDetailsArray);
-      setFilteredSongs(songDetailsArray);
-    }
-  }, [uploadedSongEvents, uploadedSongsIsLoading]);
+        const reversedSongDetails = songDetailsArray.reverse();
+
+        setSongs(songIdSet);
+        setSongDetails(reversedSongDetails);
+        setFilteredSongs(reversedSongDetails);
+      } catch (error) {
+        console.error("Error fetching songs from subgraph:", error);
+      }
+    };
+
+    getSongs();
+  }, []);
 
   const handlePlay = (songId: number) => {
     if (currentPlayingId !== null && currentPlayingId !== songId) {

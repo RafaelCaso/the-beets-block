@@ -68,10 +68,12 @@ const SongList: React.FC<SongListProps> = ({ songs, onPlay, currentPlayingId, sc
     }
   }, [scrollToSongId, onPlay]);
 
+  const sortedSongs = [...songs].sort((a, b) => b - a);
+
   return (
     <div className="w-full flex flex-col items-start">
-      {songs.length > 0 ? (
-        songs.map(songId => {
+      {sortedSongs.length > 0 ? (
+        sortedSongs.map(songId => {
           const metadata = songMetadata[songId];
 
           return (
