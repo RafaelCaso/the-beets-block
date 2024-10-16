@@ -58,7 +58,6 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
 
       const result = await response.json();
       const patronizeMusicians = result.data.patronizeMusicians;
-      console.log(patronizeMusicians);
       const songContributions = patronizeMusicians.filter((event: any) => event.songId === String(songId));
       setContributionCount(songContributions.length);
     };
