@@ -3,7 +3,6 @@ import { Howl } from "howler";
 import { Address } from "~~/components/scaffold-eth";
 import { Avatar } from "~~/components/scaffold-eth/Avatar";
 import PatronizeArtist from "~~/components/scaffold-eth/PatronizeArtist";
-import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 Howler.autoUnlock = true;
 
@@ -32,20 +31,40 @@ const Song: React.FC<SongProps> = ({ songCID, metadataCID, songId, onPlay, songI
   const howlerRef = useRef<Howl | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
 
-  const { data: songPatronized, isLoading: songPatronizedLoading } = useScaffoldEventHistory({
-    contractName: "SoundScaffold",
-    eventName: "PatronizeMusician",
-    fromBlock: 126147189n,
-    watch: true,
-  });
-
   useEffect(() => {
-    if (songPatronized) {
-      const songContributions = songPatronized.filter((event: any) => event.args.songId === BigInt(songId));
+    const fetchPatronizeEvents = async () => {
+      const response = await fetch(
+        "https://subgraph.satsuma-prod.com/4f495f562fa5/encode-club--740441/sound-scaffold-subgraph/api",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+            query {
+              patronizeMusicians {
+                id
+                patron
+                artist
+                value
+                songId
+              }
+            }
+          `,
+          }),
+        },
+      );
 
+      const result = await response.json();
+      const patronizeMusicians = result.data.patronizeMusicians;
+      console.log(patronizeMusicians);
+      const songContributions = patronizeMusicians.filter((event: any) => event.songId === String(songId));
       setContributionCount(songContributions.length);
-    }
-  }, [songPatronized, songId, songPatronizedLoading]);
+    };
+
+    fetchPatronizeEvents();
+  }, [songId]);
 
   useEffect(() => {
     const meta = JSON.parse(metadataCID);
